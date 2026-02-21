@@ -2,6 +2,8 @@
 name = "exemple-nalgebra"
 version = "0.1.0"
 edition = "2024"
+license = "MIT"
+license-file ="LICENSE"
 
 [dependencies]
 nalgebra = "0.34.1"
