@@ -1,0 +1,44 @@
+/target
+# === Rust ===
+/target/
+**/*.rs.bk
+
+# Cargo.lock
+# Para aplicações: mantenha o Cargo.lock versionado.
+# Para bibliotecas: normalmente ignore.
+# Descomente a linha abaixo se estiver criando uma biblioteca.
+# Cargo.lock
+
+# === IDEs e Editores ===
+
+# VS Code
+.vscode/
+
+# IntelliJ / RustRover / CLion
+.idea/
+*.iml
+
+# Vim
+*.swp
+*.swo
+*~
+
+# === Sistema Operacional ===
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# === Logs ===
+*.log
+
+# === Arquivos temporários ===
+tmp/
+temp/
+
+# === Coverage / profiling ===
+*.profraw
+*.profdata
+coverage/
