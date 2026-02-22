@@ -1,15 +1,38 @@
 use std::vec;
+mod element;
 
 use nalgebra::{Const, Matrix3, Matrix3x6};
 
 fn main() {
-    let x_coords = vec![75.0, 0.0, 75.0];
-    let y_coords = vec![0.0, 0.0, 50.0];
     let espessura = 13.0;
-    matriz_rigidez_local(x_coords,y_coords, espessura);
+
+    let triangulo_1 = element::Triangle::new(
+        "1".to_string(),
+        vec!["1".to_string(), "2".to_string(), "4".to_string()],
+        vec![75.0, 0.0, 75.0],
+        vec![0.0, 0.0, 50.0],
+    );
+
+    let triangulo_2 = element::Triangle::new(
+        "1".to_string(),
+        vec!["3".to_string(), "4".to_string(), "2".to_string()],
+        vec![0.0, 0.0, 75.0],
+        vec![50.0, 0.0, 50.0],
+    );
+
+    matriz_rigidez_local(
+        triangulo_1.get_xcoords(),
+        triangulo_1.get_ycoords(),
+        espessura,
+    );
+    matriz_rigidez_local(
+        triangulo_2.get_xcoords(),
+        triangulo_2.get_ycoords(),
+        espessura,
+    );
 }
 
-fn matriz_rigidez_local(x_coords: Vec<f64>, y_coords: Vec<f64>, espessura:f64) {
+fn matriz_rigidez_local(x_coords: Vec<f64>, y_coords: Vec<f64>, espessura: f64) {
     let x1 = x_coords[0];
     let mut x2 = x_coords[1];
     let mut x3 = x_coords[2];
@@ -72,7 +95,7 @@ fn matriz_rigidez_local(x_coords: Vec<f64>, y_coords: Vec<f64>, espessura:f64) {
     let area = area_triangulo(x_coords, y_coords);
 
     //Matriz de rigidez local
-    let k =area*espessura* b_transposta * db;
+    let k = area * espessura * b_transposta * db;
     println!("k = {}", k);
 }
 
@@ -107,7 +130,6 @@ fn area_triangulo(x_coords: Vec<f64>, y_coords: Vec<f64>) -> f64 {
 #[cfg(test)]
 mod tests {
     use approx::assert_relative_eq;
-    use nalgebra::Matrix3;
 
     use crate::area_triangulo;
 
