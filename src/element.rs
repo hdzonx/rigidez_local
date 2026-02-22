@@ -26,4 +26,10 @@ impl Triangle {
     pub fn get_ycoords(&self) -> Vec<f64> {
         self.y_coords.clone()
     }
+    pub fn get_id(&self)->String{
+        self.id.clone()
+    }
+    pub fn get_global_nodes(&self)->Vec<String>{
+        self.global_nodes.clone()
+    }
 }
