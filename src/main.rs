@@ -1,7 +1,9 @@
 use std::vec;
 mod element;
+mod rigidez_global;
 
 use nalgebra::{Const, Matrix3, Matrix3x6, Matrix6};
+        use nalgebra::{DMatrix, SMatrix};
 
 fn main() {
     let espessura = 13.0;
@@ -136,6 +138,13 @@ fn area_triangulo(x_coords: Vec<f64>, y_coords: Vec<f64>) -> f64 {
     area
 }
 
+
+
+///////////////////////////////////
+////Testes
+////
+///////////////////////////////////
+
 #[cfg(test)]
 mod tests {
     use approx::assert_relative_eq;
@@ -161,11 +170,9 @@ mod tests {
     #[test]
     fn rigidez_local_01() {
         let matriz_esperada: Matrix6<f64> = Matrix6::new(
-            1764100., -897000., -807300., 358800., -956800., 538200.,
-             -897000., 2511600., 538200.,-2152800., 358800., -358800., 
-            -807300., 538200., 807300., 0., 0., -538200.,
-             358800., -2152800., 0., 2152800., -358800., 0.,
-             -956800., 358800., 0., -358800., 956800., 0.,
+            1764100., -897000., -807300., 358800., -956800., 538200., -897000., 2511600., 538200.,
+            -2152800., 358800., -358800., -807300., 538200., 807300., 0., 0., -538200., 358800.,
+            -2152800., 0., 2152800., -358800., 0., -956800., 358800., 0., -358800., 956800., 0.,
             538200., -358800., -538200., 0., 0., 358800.,
         );
 
@@ -183,19 +190,21 @@ mod tests {
 
         for i in 0..matriz_esperada.nrows() {
             for j in 0..matriz_esperada.ncols() {
-                assert_relative_eq!(matriz_esperada[(i, j)], matriz_calc[(i, j)], epsilon = 1e-10)
+                assert_relative_eq!(
+                    matriz_esperada[(i, j)],
+                    matriz_calc[(i, j)],
+                    epsilon = 1e-10
+                )
             }
         }
     }
 
-        #[test]
+    #[test]
     fn rigidez_local_02() {
         let matriz_esperada: Matrix6<f64> = Matrix6::new(
-            1764100., -897000., -807300., 358800., -956800., 538200.,
-             -897000., 2511600., 538200.,-2152800., 358800., -358800., 
-            -807300., 538200., 807300., 0., 0., -538200.,
-             358800., -2152800., 0., 2152800., -358800., 0.,
-             -956800., 358800., 0., -358800., 956800., 0.,
+            1764100., -897000., -807300., 358800., -956800., 538200., -897000., 2511600., 538200.,
+            -2152800., 358800., -358800., -807300., 538200., 807300., 0., 0., -538200., 358800.,
+            -2152800., 0., 2152800., -358800., 0., -956800., 358800., 0., -358800., 956800., 0.,
             538200., -358800., -538200., 0., 0., 358800.,
         );
 
@@ -205,16 +214,21 @@ mod tests {
             Matrix3::new(220800., 55200., 0., 55200., 220800., 0., 0., 0., 82800.);
 
         let matriz_calc = matriz_rigidez_local(
-        vec![0.0, 0.0, 75.0],
-        vec![50.0, 0.0, 50.0],
+            vec![0.0, 0.0, 75.0],
+            vec![50.0, 0.0, 50.0],
             espessura,
             constitutive_matrix,
         );
 
         for i in 0..matriz_esperada.nrows() {
             for j in 0..matriz_esperada.ncols() {
-                assert_relative_eq!(matriz_esperada[(i, j)], matriz_calc[(i, j)], epsilon = 1e-10)
+                assert_relative_eq!(
+                    matriz_esperada[(i, j)],
+                    matriz_calc[(i, j)],
+                    epsilon = 1e-10
+                )
             }
         }
     }
+
 }
