@@ -1,6 +1,7 @@
 use std::vec;
 mod element;
 mod rigidez_global;
+mod gradiente_conjugado;
 
 use nalgebra::{Const, Matrix3, Matrix3x6, Matrix6};
         use nalgebra::{DMatrix, SMatrix};
