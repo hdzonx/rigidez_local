@@ -108,15 +108,15 @@ mod tests {
         );
 
         // elementos e nós
-        // (2)-----(3)
-        //  |  \    |
-        //  |   \   |
-        //  |     \ |
-        // (0)-----(1)
-        // e1 = [0, 1, 2] (elemento 1)
-        // e2 = [1, 3, 2] (elemento 2)
+        // (2)-----(1)
+        //  |     / |
+        //  |   /   |
+        //  | /     |
+        // (3)-----(0)
+        // e1 = [0, 1, 3] (elemento 1)
+        // e2 = [2, 3, 1] (elemento 2)
 
-        let elements = vec![([0, 1, 2], k_local), ([1, 3, 2], k_local)];
+        let elements = vec![([0, 1, 3], k_local), ([2, 3, 1], k_local)];
         let k_global = assemble_sparse(4, &elements);
 
         println!("Matriz global (CSR):");
