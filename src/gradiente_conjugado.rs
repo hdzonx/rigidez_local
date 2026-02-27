@@ -30,19 +30,11 @@ impl CsrMatrix {
 
 /// Produto interno paralelo
 fn dot(a: &[f64], b: &[f64]) -> f64 {
-    a.par_iter()
-        .zip(b.par_iter())
-        .map(|(x, y)| x * y)
-        .sum()
+    a.par_iter().zip(b.par_iter()).map(|(x, y)| x * y).sum()
 }
 
 /// Gradiente Conjugado
-fn conjugate_gradient(
-    a: &CsrMatrix,
-    b: &[f64],
-    max_iter: usize,
-    tol: f64,
-) -> Vec<f64> {
+fn conjugate_gradient(a: &CsrMatrix, b: &[f64], max_iter: usize, tol: f64) -> Vec<f64> {
     let n = b.len();
     let mut x = vec![0.0; n];
     let mut r = b.to_vec(); // r = b - Ax (x=0 → r=b)
@@ -83,44 +75,33 @@ fn conjugate_gradient(
 }
 
 #[cfg(test)]
-mod test{
+mod test {
     use crate::gradiente_conjugado::CsrMatrix;
     use crate::gradiente_conjugado::conjugate_gradient;
     #[test]
-    fn conjugate_test(){
-    // Matriz SPD simples (4x4)
-    // Exemplo clássico
-    let values = vec![
-        4.0, 1.0,
-        1.0, 3.0, 1.0,
-        1.0, 2.0,
-        2.0
-    ];
+    fn conjugate_test() {
+        // Matriz SPD simples (4x4)
+        // Exemplo clássico
+        let values = vec![4.0, 1.0, 1.0, 3.0, 1.0, 1.0, 2.0, 2.0];
 
-    let col_indices = vec![
-        0, 1,
-        0, 1, 2,
-        1, 2,
-        3
-    ];
+        let col_indices = vec![0, 1, 0, 1, 2, 1, 2, 3];
 
-    let row_ptr = vec![0, 2, 5, 7, 8];
+        let row_ptr = vec![0, 2, 5, 7, 8];
 
-    let a = CsrMatrix {
-        values,
-        col_indices,
-        row_ptr,
-        n: 4,
-    };
+        let a = CsrMatrix {
+            values,
+            col_indices,
+            row_ptr,
+            n: 4,
+        };
 
-    let b = vec![1.0, 2.0, 3.0, 4.0];
+        let b = vec![1.0, 2.0, 3.0, 4.0];
 
-    let solution = conjugate_gradient(&a, &b, 100, 1e-10);
+        let solution = conjugate_gradient(&a, &b, 100, 1e-10);
 
-    println!("Solução aproximada:");
-    for (i, val) in solution.iter().enumerate() {
-        println!("x{} = {:.6}", i, val);
+        println!("Solução aproximada:");
+        for (i, val) in solution.iter().enumerate() {
+            println!("x{} = {:.6}", i, val);
+        }
     }
-    }
-
 }

@@ -2,6 +2,7 @@ use std::vec;
 mod element;
 mod rigidez_global;
 mod gradiente_conjugado;
+mod gradiente_conjug_jacobi;
 
 use nalgebra::{Const, Matrix3, Matrix3x6, Matrix6};
         use nalgebra::{DMatrix, SMatrix};
