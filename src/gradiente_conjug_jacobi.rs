@@ -150,10 +150,45 @@ mod tests {
         println!("Threads Rayon used: {}", rayon::current_num_threads());
         let a = CsrMatrix::from_dense(&dense);
         let b = vec![1.0, 2.0, 3.0, 4.0];
+        println!("a = {:?}",a);
+        println!("b = {:?}",b);
 
         let x = conjugate_gradient_jacobi(&a, &b, 1000, 1e-12);
 
         let ax = a.matvec(&x);
+
+        println!("ax = {:?}",ax);
+
+        let error = ax.iter()
+            .zip(b.iter())
+            .map(|(ax_i, b_i)| (ax_i - b_i).powi(2))
+            .sum::<f64>()
+            .sqrt();
+
+        println!("Erro = {}", error);
+        assert!(error < 1e-8);
+    }
+
+
+        #[test]
+    fn test_pcg_jacobi_02() {
+        let dense = vec![
+            vec![1764100.0, -807300.0, 358800.0],
+            vec![-807300.0, 1764100.0, 0.0],
+            vec![358800.0, 0.0, 2511600.0],
+        ];
+
+        println!("Threads Rayon used: {}", rayon::current_num_threads());
+        let a = CsrMatrix::from_dense(&dense);
+        let b = vec![0.0, 0.0, -4450.0];
+        println!("a = {:?}",a);
+        println!("b = {:?}",b);
+
+        let x = conjugate_gradient_jacobi(&a, &b, 1000, 1e-12);
+        println!("x = {:?}",x);
+
+        let ax = a.matvec(&x);
+        println!("ax = {:?}",ax);
 
         let error = ax.iter()
             .zip(b.iter())
