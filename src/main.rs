@@ -3,6 +3,8 @@ mod element;
 mod rigidez_global;
 mod gradiente_conjugado;
 mod gradiente_conjug_jacobi;
+mod matriz_reduzida;
+mod gradiente_conjugado_cholesky;
 
 use nalgebra::{Const, Matrix3, Matrix3x6, Matrix6};
         use nalgebra::{DMatrix, SMatrix};
