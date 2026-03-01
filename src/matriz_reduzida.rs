@@ -7,7 +7,6 @@ pub struct CsrMatrix {
     pub values: Vec<f64>,
 }
 
-
 use rayon::prelude::*;
 
 pub fn dense_to_csr(mat: &[Vec<f64>], tol: f64) -> CsrMatrix {
@@ -52,11 +51,7 @@ pub fn dense_to_csr(mat: &[Vec<f64>], tol: f64) -> CsrMatrix {
     }
 }
 
-
-pub fn reduzir_csr(
-    k: &CsrMatrix,
-    removidos: &[usize],
-) -> CsrMatrix {
+pub fn reduzir_csr(k: &CsrMatrix, removidos: &[usize]) -> CsrMatrix {
     let n = k.n;
 
     // 1. máscara
@@ -120,8 +115,6 @@ pub fn reduzir_csr(
     }
 }
 
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -137,18 +130,14 @@ mod tests {
             n: 5,
             row_ptr: vec![0, 2, 4, 7, 10, 13],
             col_ind: vec![
-                0, 2,        // linha 0
-                1, 4,        // linha 1
-                0, 2, 3,     // linha 2
-                2, 3, 4,     // linha 3
-                1, 3, 4,     // linha 4
+                0, 2, // linha 0
+                1, 4, // linha 1
+                0, 2, 3, // linha 2
+                2, 3, 4, // linha 3
+                1, 3, 4, // linha 4
             ],
             values: vec![
-                10.0, 2.0,
-                20.0, 3.0,
-                2.0, 30.0, 4.0,
-                4.0, 40.0, 5.0,
-                3.0, 5.0, 50.0,
+                10.0, 2.0, 20.0, 3.0, 2.0, 30.0, 4.0, 4.0, 40.0, 5.0, 3.0, 5.0, 50.0,
             ],
         }
     }
@@ -178,17 +167,47 @@ mod tests {
         assert_eq!(kr.values, values_esperado);
     }
     #[test]
-fn testa_dense_to_csr() {
-    let mat = vec![
-        vec![10.0, 0.0, 2.0],
-        vec![0.0, 20.0, 0.0],
-        vec![2.0, 0.0, 30.0],
-    ];
+    fn testa_dense_to_csr() {
+        let mat = vec![
+            vec![10.0, 0.0, 2.0],
+            vec![0.0, 20.0, 0.0],
+            vec![2.0, 0.0, 30.0],
+        ];
 
-    let csr = dense_to_csr(&mat, 1e-12);
+        let csr = dense_to_csr(&mat, 1e-12);
 
-    assert_eq!(csr.row_ptr, vec![0, 2, 3, 5]);
-    assert_eq!(csr.col_ind, vec![0, 2, 1, 0, 2]);
-    assert_eq!(csr.values, vec![10.0, 2.0, 20.0, 2.0, 30.0]);
-}
+        assert_eq!(csr.row_ptr, vec![0, 2, 3, 5]);
+        assert_eq!(csr.col_ind, vec![0, 2, 1, 0, 2]);
+        assert_eq!(csr.values, vec![10.0, 2.0, 20.0, 2.0, 30.0]);
+    }
+
+    #[test]
+    fn testa_dense_to_csr_2() {
+        let mat = vec![
+            vec![50.0, -50.0, 0.0, 0.0],
+            vec![-50.0, 150.0, -30.0, -70.0],
+            vec![0.0, -30.0, 30.0, 0.0],
+            vec![0.0, -70.0, 0.0, 70.0],
+        ];
+
+        let csr = dense_to_csr(&mat, 1e-12);
+
+        assert_eq!(csr.row_ptr, vec![0, 2, 6, 8, 10]);
+        //índices contados em linha
+        assert_eq!(
+            csr.col_ind,
+            vec![
+                0, 1, //linha 1 : row_prt = 2
+                0, 1, 2, 3, //linha 2: row_ptr = 6
+                1, 2, //linha 3: row_ptr = 8
+                1, 3 //linha 4: ow_ptr = 10
+            ]
+        );
+        assert_eq!(
+            csr.values,
+            vec![
+                50.0, -50.0, -50.0, 150.0, -30.0, -70.0, -30.0, 30.0, -70.0, 70.0
+            ]
+        );
+    }
 }
