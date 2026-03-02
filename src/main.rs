@@ -5,6 +5,7 @@ mod gradiente_conjugado;
 mod gradiente_conjug_jacobi;
 mod matriz_reduzida;
 mod gradiente_conjugado_cholesky;
+mod rigidez_local;
 
 use nalgebra::{Const, Matrix3, Matrix3x6, Matrix6};
         use nalgebra::{DMatrix, SMatrix};
@@ -16,14 +17,14 @@ fn main() {
 
     let triangulo_1 = element::Triangle::new(
         "1".to_string(),
-        vec!["1".to_string(), "2".to_string(), "4".to_string()],
+        vec![1, 2, 4],
         vec![75.0, 0.0, 75.0],
         vec![0.0, 0.0, 50.0],
     );
 
     let triangulo_2 = element::Triangle::new(
         "1".to_string(),
-        vec!["3".to_string(), "4".to_string(), "2".to_string()],
+        vec![3, 4, 2],
         vec![0.0, 0.0, 75.0],
         vec![50.0, 0.0, 50.0],
     );
@@ -144,95 +145,3 @@ fn area_triangulo(x_coords: Vec<f64>, y_coords: Vec<f64>) -> f64 {
 
 
 
-///////////////////////////////////
-////Testes
-////
-///////////////////////////////////
-
-#[cfg(test)]
-mod tests {
-    use approx::assert_relative_eq;
-    use approx::relative_eq;
-    use nalgebra::Matrix3;
-    use nalgebra::Matrix6;
-
-    use crate::area_triangulo;
-    use crate::matriz_rigidez_local;
-
-    #[test]
-    fn calcula_triangulo() {
-        let x_coords = vec![75.0, 0.0, 75.0];
-        let y_coords = vec![0.0, 0.0, 50.0];
-
-        let calculado = area_triangulo(x_coords, y_coords);
-
-        // àrea esperada
-        let esperado = 1875.0;
-
-        assert_relative_eq!(calculado, esperado, epsilon = 1e-10);
-    }
-    #[test]
-    fn rigidez_local_01() {
-        let matriz_esperada: Matrix6<f64> = Matrix6::new(
-            1764100., -897000., -807300., 358800., -956800., 538200., -897000., 2511600., 538200.,
-            -2152800., 358800., -358800., -807300., 538200., 807300., 0., 0., -538200., 358800.,
-            -2152800., 0., 2152800., -358800., 0., -956800., 358800., 0., -358800., 956800., 0.,
-            538200., -358800., -538200., 0., 0., 358800.,
-        );
-
-        //Matriz calculada
-        let espessura = 13.0;
-        let constitutive_matrix =
-            Matrix3::new(220800., 55200., 0., 55200., 220800., 0., 0., 0., 82800.);
-
-        let matriz_calc = matriz_rigidez_local(
-            vec![75.0, 0.0, 75.0],
-            vec![0.0, 0.0, 50.0],
-            espessura,
-            constitutive_matrix,
-        );
-
-        for i in 0..matriz_esperada.nrows() {
-            for j in 0..matriz_esperada.ncols() {
-                assert_relative_eq!(
-                    matriz_esperada[(i, j)],
-                    matriz_calc[(i, j)],
-                    epsilon = 1e-10
-                )
-            }
-        }
-    }
-
-    #[test]
-    fn rigidez_local_02() {
-        let matriz_esperada: Matrix6<f64> = Matrix6::new(
-            1764100., -897000., -807300., 358800., -956800., 538200., -897000., 2511600., 538200.,
-            -2152800., 358800., -358800., -807300., 538200., 807300., 0., 0., -538200., 358800.,
-            -2152800., 0., 2152800., -358800., 0., -956800., 358800., 0., -358800., 956800., 0.,
-            538200., -358800., -538200., 0., 0., 358800.,
-        );
-
-        //Matriz calculada
-        let espessura = 13.0;
-        let constitutive_matrix =
-            Matrix3::new(220800., 55200., 0., 55200., 220800., 0., 0., 0., 82800.);
-
-        let matriz_calc = matriz_rigidez_local(
-            vec![0.0, 0.0, 75.0],
-            vec![50.0, 0.0, 50.0],
-            espessura,
-            constitutive_matrix,
-        );
-
-        for i in 0..matriz_esperada.nrows() {
-            for j in 0..matriz_esperada.ncols() {
-                assert_relative_eq!(
-                    matriz_esperada[(i, j)],
-                    matriz_calc[(i, j)],
-                    epsilon = 1e-10
-                )
-            }
-        }
-    }
-
-}

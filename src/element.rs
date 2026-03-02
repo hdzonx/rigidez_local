@@ -1,6 +1,6 @@
 pub struct Triangle {
     id: String,
-    global_nodes: Vec<String>,
+    global_nodes: Vec<u32>,
     x_coords: Vec<f64>,
     y_coords: Vec<f64>,
 }
@@ -8,7 +8,7 @@ pub struct Triangle {
 impl Triangle {
     pub fn new(
         id: String,
-        global_nodes: Vec<String>,
+        global_nodes: Vec<u32>,
         x_coords: Vec<f64>,
         y_coords: Vec<f64>,
     ) -> Self {
@@ -29,7 +29,7 @@ impl Triangle {
     pub fn get_id(&self)->String{
         self.id.clone()
     }
-    pub fn get_global_nodes(&self)->Vec<String>{
+    pub fn get_global_nodes(&self)->Vec<u32>{
         self.global_nodes.clone()
     }
 }
