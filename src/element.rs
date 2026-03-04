@@ -1,10 +1,10 @@
 pub mod element{
     pub trait Element{
-        type elementType;
+        type element_type;
         fn new(id: u32,
             global_nodes: Vec<u32>,
             x_coords: Vec<f64>,
-            y_coords: Vec<f64>)->Self::elementType;
+            y_coords: Vec<f64>)->Self::element_type;
 
         fn get_xcoords(&self)->Vec<f64> ;
         fn get_ycoords(&self) -> Vec<f64>;
@@ -19,13 +19,13 @@ pub struct Triangle {
     }
 
     impl Element for Triangle {
-        type elementType = Triangle;
+        type element_type = Triangle;
          fn new(
             id: u32,
             global_nodes: Vec<u32>,
             x_coords: Vec<f64>,
             y_coords: Vec<f64>,
-        ) -> Self::elementType {
+        ) -> Self::element_type {
             Self {
                 id,
                 global_nodes,
