@@ -17,13 +17,11 @@ fn surface_force(
 
     //Mapeia as coordenadas nos nós locais node_a e node_b
     if let Some(pos) = elem.get_global_nodes().iter().position(|x| x == node_a) {
-        println!("Encontrado no índice: {}", pos);
         x1 = elem.get_xcoords()[pos];
         y1 = elem.get_ycoords()[pos];
     }
 
     if let Some(pos) = elem.get_global_nodes().iter().position(|x| x == node_b) {
-        println!("Encontrado no índice: {}", pos);
         x2 = elem.get_xcoords()[pos];
         y2 = elem.get_ycoords()[pos];
     }
@@ -35,7 +33,6 @@ fn surface_force(
             elem.get_id()
         );
     }
-    println!("lenght size of load surface = {}", lenght_size);
 
     let force_xa = -(y2 - y1) / lenght_size * act_force_val[0];
     let force_ya = -(x1 - x2) / lenght_size * act_force_val[0];
@@ -62,8 +59,6 @@ mod tests {
         element::element::{Element, Triangle},
         forces::surface_force,
     };
-    use approx::{self, assert_relative_eq};
-
     #[test]
     fn nodal_force_test_01() {
         let elem_01 = Triangle::new(
@@ -80,6 +75,26 @@ mod tests {
         println!("force vecto = {:?}", calc_force_vec);
 
         let expected_forces = vec![-233.33, -175.0, -266.67, -200.0];
+
+        for i in 0..calc_force_vec.len() {
+        approx::assert_abs_diff_eq!(calc_force_vec[i], expected_forces[i], epsilon = 0.1);        }
+    }
+    #[test]
+    fn nodal_force_test_02() {
+        let elem_01 = Triangle::new(
+            1,
+            vec![7, 8, 9],
+            vec![100.0, 85.0, 50.0],
+            vec![20.0, 40.0, 20.0],
+        );
+        let global_node_force_act = vec![7, 8];
+        let esp = 10.0;
+        let force_val = vec![1.0, 2.0];
+
+        let calc_force_vec = surface_force(&elem_01, global_node_force_act, esp, force_val);
+        println!("force vecto = {:?}", calc_force_vec);
+
+        let expected_forces = vec![-133.33, -100.0, -166.67, -125.0];
 
         for i in 0..calc_force_vec.len() {
         approx::assert_abs_diff_eq!(calc_force_vec[i], expected_forces[i], epsilon = 0.1);        }
