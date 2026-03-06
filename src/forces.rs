@@ -1,29 +1,28 @@
 use crate::element::element::{Element, Triangle};
 
-fn surface_force(elem: &Triangle, global_node_force_act: Vec<u32>, thickness: f64) {
-    let coord_x = elem.get_xcoords();
-    let coord_y = elem.get_ycoords();
+fn surface_force(elem: &Triangle, global_node_force_act: Vec<u32>, thickness: f64, act_force_val: Vec<f64>) {
 
-    let global_node_element = elem.get_global_nodes();
-
-    let node_1 = &global_node_force_act[0];
-    let node_2 = &global_node_force_act[1];
+    // O vetor de forças atua considerando apenas dois nós,a e b
+    let node_a = &global_node_force_act[0];
+    let node_b = &global_node_force_act[1];
 
     let mut x1: f64 = 0.0;
     let mut x2: f64 = 0.0;
     let mut y1: f64 = 0.0;
     let mut y2: f64 = 0.0;
 
-    if let Some(pos) = global_node_element.iter().position(|x| x == node_1) {
+
+    //Mapeia as coordenadas nos nós locais node_a e node_b
+    if let Some(pos) = elem.get_global_nodes().iter().position(|x| x == node_a) {
         println!("Encontrado no índice: {}", pos);
-        x1 = coord_x[pos];
-        y1 = coord_y[pos];
+        x1 = elem.get_xcoords()[pos];
+        y1 = elem.get_ycoords()[pos];
     }
 
-    if let Some(pos) = global_node_element.iter().position(|x| x == node_2) {
+    if let Some(pos) = elem.get_global_nodes().iter().position(|x| x == node_b) {
         println!("Encontrado no índice: {}", pos);
-        x2 = coord_x[pos];
-        y2 = coord_y[pos];
+        x2 = elem.get_xcoords()[pos];
+        y2 = elem.get_ycoords()[pos];
     }
 
     let lenght_size = ((x1 - x2).powf(2.0) + (y1 - y2).powf(2.0)).sqrt();
@@ -34,6 +33,27 @@ fn surface_force(elem: &Triangle, global_node_force_act: Vec<u32>, thickness: f6
         );
     }
     println!("lenght size of load surface = {}", lenght_size);
+
+
+    let force_xa = -(y2-y1)/lenght_size*act_force_val[0];
+    let force_ya = -(x1-x2)/lenght_size*act_force_val[0];
+
+    let force_xb = -(y2-y1)/lenght_size*act_force_val[1];
+    let force_yb = -(x1-x2)/lenght_size*act_force_val[1];
+
+    let scalar = thickness*lenght_size/6.0;
+
+    let force_vector = vec![
+                                        2.0*force_xa+force_xb,
+                                        2.0*force_ya+force_yb,
+                                        force_xa + 2.0*force_xb,
+                                        force_ya+2.0*force_yb
+                                        ];
+
+                                    
+
+    println!("force vecto = {:?}", force_vector);
+
 }
 
 #[cfg(test)]
@@ -53,7 +73,8 @@ mod tests {
         );
         let global_node_force_act = vec![3, 4];
         let esp = 5.0;
+        let force_val = vec![10.0,20.];
 
-        surface_force(&elem_01, global_node_force_act, esp);
+        surface_force(&elem_01, global_node_force_act, esp, force_val);
     }
 }
