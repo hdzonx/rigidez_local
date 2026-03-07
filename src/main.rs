@@ -7,6 +7,7 @@ mod matriz_reduzida;
 mod gradiente_conjugado_cholesky;
 mod rigidez_local;
 mod forces;
+mod constitutive_matrix;
 
 use element::element::{Triangle, Element};
 
