@@ -1,4 +1,5 @@
 use rayon::prelude::*;
+#[allow(unused)]
 
 pub struct CsrMatrix {
     pub n: usize,
@@ -6,9 +7,7 @@ pub struct CsrMatrix {
     pub col_ind: Vec<usize>,
     pub values: Vec<f64>,
 }
-
-use rayon::prelude::*;
-
+#[allow(unused)]
 pub fn dense_to_csr(mat: &[Vec<f64>], tol: f64) -> CsrMatrix {
     let n = mat.len();
 
@@ -51,6 +50,7 @@ pub fn dense_to_csr(mat: &[Vec<f64>], tol: f64) -> CsrMatrix {
     }
 }
 
+#[allow(unused)]
 pub fn reduzir_csr(k: &CsrMatrix, removidos: &[usize]) -> CsrMatrix {
     let n = k.n;
 

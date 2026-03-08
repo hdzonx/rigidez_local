@@ -1,5 +1,5 @@
 use crate::element::element::{Element, Triangle};
-
+#[allow(unused)]
 fn surface_force(
     elem: &Triangle,
     global_node_force_act: Vec<u32>,
@@ -77,7 +77,8 @@ mod tests {
         let expected_forces = vec![-233.33, -175.0, -266.67, -200.0];
 
         for i in 0..calc_force_vec.len() {
-        approx::assert_abs_diff_eq!(calc_force_vec[i], expected_forces[i], epsilon = 0.1);        }
+            approx::assert_abs_diff_eq!(calc_force_vec[i], expected_forces[i], epsilon = 0.1);
+        }
     }
     #[test]
     fn nodal_force_test_02() {
@@ -97,6 +98,9 @@ mod tests {
         let expected_forces = vec![-133.33, -100.0, -166.67, -125.0];
 
         for i in 0..calc_force_vec.len() {
-        approx::assert_abs_diff_eq!(calc_force_vec[i], expected_forces[i], epsilon = 0.1);        }
+            approx::assert_abs_diff_eq!(calc_force_vec[i], expected_forces[i], epsilon = 0.1);
+        }
+
+
     }
 }
