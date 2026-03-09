@@ -6,8 +6,9 @@ mod gradiente_conjug_jacobi;
 mod matriz_reduzida;
 mod gradiente_conjugado_cholesky;
 mod rigidez_local;
-mod forces;
+mod local_forces;
 mod constitutive_matrix;
+mod global_force;
 
 use element::element::{Triangle, Element};
 

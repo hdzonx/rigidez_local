@@ -57,7 +57,7 @@ fn surface_force(
 mod tests {
     use crate::{
         element::element::{Element, Triangle},
-        forces::surface_force,
+        local_forces::surface_force,
     };
     #[test]
     fn nodal_force_test_01() {
