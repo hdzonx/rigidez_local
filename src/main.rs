@@ -1,19 +1,20 @@
 use std::vec;
-mod element;
-mod rigidez_global;
-mod gradiente_conjugado;
-mod gradiente_conjug_jacobi;
-mod matriz_reduzida;
-mod gradiente_conjugado_cholesky;
-mod rigidez_local;
-mod local_forces;
 mod constitutive_matrix;
+mod element;
+mod exemplo;
 mod global_force;
+mod gradiente_conjug_jacobi;
+mod gradiente_conjugado;
+mod gradiente_conjugado_cholesky;
+mod local_forces;
+mod matriz_reduzida;
+mod rigidez_global;
+mod rigidez_local;
 
-use element::element::{Triangle, Element};
+use element::element::{Element, Triangle};
 
 use nalgebra::{Const, Matrix3, Matrix3x6, Matrix6};
-        use nalgebra::{DMatrix, SMatrix};
+use nalgebra::{DMatrix, SMatrix};
 
 fn main() {
     let espessura = 13.0;
@@ -112,7 +113,7 @@ fn matriz_rigidez_local(
     let db = constitutive_matrix * b;
     println!("dxb = {}", db);
 
-    let area = area_triangulo(x_coords, y_coords);
+    let area = area_triangulo(&x_coords, &y_coords);
 
     //Matriz de rigidez local
     let k = area * espessura * b_transposta * db;
@@ -120,7 +121,7 @@ fn matriz_rigidez_local(
     k
 }
 
-fn area_triangulo(x_coords: Vec<f64>, y_coords: Vec<f64>) -> f64 {
+fn area_triangulo(x_coords: &Vec<f64>, y_coords: &Vec<f64>) -> f64 {
     if x_coords.len() != 3 || y_coords.len() != 3 {
         panic!("dimension of coordinates vector must be 3");
     }
@@ -147,6 +148,3 @@ fn area_triangulo(x_coords: Vec<f64>, y_coords: Vec<f64>) -> f64 {
 
     area
 }
-
-
-

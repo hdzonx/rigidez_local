@@ -1,7 +1,7 @@
 use nalgebra::Matrix3;
 #[allow(unused)]
 
-fn constitutive_matrix(plane_state: &str, poisson: f64, elasticity: f64)->Matrix3<f64> {
+pub fn constitutive_matrix(plane_state: &str, poisson: f64, elasticity: f64)->Matrix3<f64> {
     let mut constitutive_matrix = Matrix3::new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
     if plane_state.eq_ignore_ascii_case("Plane Strain") {

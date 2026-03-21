@@ -1,5 +1,5 @@
 use nalgebra::{Const, Matrix3, Matrix3x6, Matrix6};
-     
+///Matriz de rigidez local para elemento triangular (CST)
 fn matriz_rigidez_local(
     x_coords: Vec<f64>,
     y_coords: Vec<f64>,
@@ -64,7 +64,7 @@ fn matriz_rigidez_local(
     let db = constitutive_matrix * b;
     println!("dxb = {}", db);
 
-    let area = area_triangulo(x_coords, y_coords);
+    let area = area_triangulo(&x_coords, &y_coords);
 
     //Matriz de rigidez local
     let k = area * espessura * b_transposta * db;
@@ -72,7 +72,7 @@ fn matriz_rigidez_local(
     k
 }
 
-fn area_triangulo(x_coords: Vec<f64>, y_coords: Vec<f64>) -> f64 {
+fn area_triangulo(x_coords: &Vec<f64>, y_coords: &Vec<f64>) -> f64 {
     if x_coords.len() != 3 || y_coords.len() != 3 {
         panic!("dimension of coordinates vector must be 3");
     }
@@ -100,9 +100,6 @@ fn area_triangulo(x_coords: Vec<f64>, y_coords: Vec<f64>) -> f64 {
     area
 }
 
-
-
-
 ///////////////////////////////////
 ////Testes
 ////
@@ -123,7 +120,7 @@ mod tests {
         let x_coords = vec![75.0, 0.0, 75.0];
         let y_coords = vec![0.0, 0.0, 50.0];
 
-        let calculado = area_triangulo(x_coords, y_coords);
+        let calculado = area_triangulo(&x_coords, &y_coords);
 
         // àrea esperada
         let esperado = 1875.0;
@@ -193,5 +190,4 @@ mod tests {
             }
         }
     }
-
 }
