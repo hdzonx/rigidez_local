@@ -37,13 +37,12 @@ mod tests {
         let escalar = 3.297e6;
 
         let matriz_inicial: Matrix6<f64> = Matrix6::new(
-            0.5, 0.0, -0.75, 0.15, 0.25, -0.15, 0., 0.175, 0.175, -0.263, -0.175, 0.088, -0.75,
-            0.1750, 1.3, -0.488, -0.55, 0.313, 0.15, -0.263, -0.488, 0.894, 0.338, -0.631, 0.25,
-            -0.175, -0.55, 0.338, 0.3, -0.163, -1.5, 0.088, 0.313, -0.631, -0.163, 0.544,
+            0.5, 0.0, -0.75, 0.15, 0.25, -0.15, 0., 0.175, 0.175, -0.2627, -0.175, 0.088, -0.75,
+            0.1750, 1.3, -0.488, -0.55, 0.313, 0.15, -0.2627, -0.488, 0.894, 0.338, -0.631, 0.25,
+            -0.175, -0.55, 0.338, 0.3, -0.163, -0.15, 0.088, 0.313, -0.631, -0.163, 0.544,
         );
 
         let rigidez_local_esperada = escalar * matriz_inicial;
-        //println!("{:?}", rigidez_local_esperada);
 
         let poisson = 0.3;
         let elasticidade = 30.0e6;
@@ -52,6 +51,25 @@ mod tests {
 
         let rigidez_local_calc =
             matriz_rigidez_local(x_coords, y_coords, espessura, constitutive_matrix);
+
+        //Avalie o erro com assertion para cada valor da matriz
+        for i in 0..rigidez_local_esperada.nrows() {
+            for j in 0..rigidez_local_esperada.ncols() {
+                let tol = 1e4;
+                println!("i = {}, j ={}", i + 1, j + 1);
+                let relat_err = (rigidez_local_esperada[(i, j)] - rigidez_local_calc[(i, j)]).abs();
+
+                println!("calculado = {}", rigidez_local_calc[(i, j)]);
+                println!("esperado = {}", rigidez_local_esperada[(i, j)]);
+
+                assert!(
+                    relat_err < tol,
+                    "Erro relativo alto demais: {} (esperado < {})",
+                    relat_err,
+                    tol
+                );
+            }
+        }
 
         println!("{:?}", rigidez_local_calc);
     }
