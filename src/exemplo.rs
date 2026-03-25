@@ -73,4 +73,63 @@ mod tests {
 
         println!("{:?}", rigidez_local_calc);
     }
+
+
+        #[test]
+    fn calcula_rigidez_local_el_2() {
+        let x_coords = vec![0.0, 10.0, 0.0];
+        let y_coords = vec![0.0, 15.0, 20.0];
+
+        let area = area_triangulo(&x_coords, &y_coords);
+        let espessura = 0.1;
+
+        let escalar = 3.297e6;
+
+        let matriz_inicial: Matrix6<f64> = Matrix6::new(
+            0.15, 0.081, -0.25, -0.175, 0.1, 0.094, 
+            
+            0.081, 0.272, -0.15, -0.088, 0.069, -0.184,
+
+            -0.25,
+            -0.15, 1.0, 0.0, -0.75, 0.15,
+            
+             -0.175, -0.088, 0.0, 0.35, 0.175,-0.263, 
+            
+            0.1,
+            0.069, -0.75, 0.175, 0.65, -0.244, 
+
+            0.094, -0.184, 0.15, -0.263, -0.244, 0.447,
+        );
+
+        let rigidez_local_esperada = escalar * matriz_inicial;
+
+        let poisson = 0.3;
+        let elasticidade = 30.0e6;
+        let constitutive_matrix =
+            constitutive_matrix::constitutive_matrix("Plane stress", poisson, elasticidade);
+
+        let rigidez_local_calc =
+            matriz_rigidez_local(x_coords, y_coords, espessura, constitutive_matrix);
+
+        //Avalie o erro com assertion para cada valor da matriz
+        for i in 0..rigidez_local_esperada.nrows() {
+            for j in 0..rigidez_local_esperada.ncols() {
+                let tol = 1e4;
+                println!("i = {}, j ={}", i + 1, j + 1);
+                let relat_err = (rigidez_local_esperada[(i, j)] - rigidez_local_calc[(i, j)]).abs();
+
+                println!("calculado = {}", rigidez_local_calc[(i, j)]);
+                println!("esperado = {}", rigidez_local_esperada[(i, j)]);
+
+                assert!(
+                    relat_err < tol,
+                    "Erro relativo alto demais: {} (esperado < {})",
+                    relat_err,
+                    tol
+                );
+            }
+        }
+
+        println!("{:?}", rigidez_local_calc);
+    }
 }
