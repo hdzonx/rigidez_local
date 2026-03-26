@@ -25,7 +25,7 @@ pub fn assemble_global_triangle(
 }
 
 //Eficiente para matriz esparsa
-fn assemble_sparse(num_nodes: usize, elements: &Vec<([usize; 3], Matrix6)>) -> CsMat<f64> {
+pub fn assemble_sparse(num_nodes: usize, elements: &Vec<([usize; 3], Matrix6)>) -> CsMat<f64> {
     let total_dofs = num_nodes * 2;
 
     // matriz em formato triplet (COO)

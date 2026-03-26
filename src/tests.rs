@@ -4,11 +4,11 @@
 //      |  \
 //      |    \
 //      |      \
-//      |        \ (3)-[10,15]
+//      |   2    \ (3)-[10,15]
 //      |       / |
 //      |      /  |
 //      |     /   |
-//      |    /    | (2)-[10,5]
+//      |    /  1 | (2)-[10,5]
 //      |   /    /
 //      |  /   /
 //      | /  /
@@ -21,10 +21,12 @@ mod tests {
     //use approx::relative_eq;
     use nalgebra::Matrix3;
     use nalgebra::Matrix6;
+    use nalgebra::MatrixN;
 
     use crate::area_triangulo;
     use crate::constitutive_matrix;
     use crate::matriz_rigidez_local;
+    use crate::rigidez_global;
 
     #[test]
     fn calcula_rigidez_local_el_1() {
@@ -74,8 +76,7 @@ mod tests {
         println!("{:?}", rigidez_local_calc);
     }
 
-
-        #[test]
+    #[test]
     fn calcula_rigidez_local_el_2() {
         let x_coords = vec![0.0, 10.0, 0.0];
         let y_coords = vec![0.0, 15.0, 20.0];
@@ -86,19 +87,9 @@ mod tests {
         let escalar = 3.297e6;
 
         let matriz_inicial: Matrix6<f64> = Matrix6::new(
-            0.15, 0.081, -0.25, -0.175, 0.1, 0.094, 
-            
-            0.081, 0.272, -0.15, -0.088, 0.069, -0.184,
-
-            -0.25,
-            -0.15, 1.0, 0.0, -0.75, 0.15,
-            
-             -0.175, -0.088, 0.0, 0.35, 0.175,-0.263, 
-            
-            0.1,
-            0.069, -0.75, 0.175, 0.65, -0.244, 
-
-            0.094, -0.184, 0.15, -0.263, -0.244, 0.447,
+            0.15, 0.081, -0.25, -0.175, 0.1, 0.094, 0.081, 0.272, -0.15, -0.088, 0.069, -0.184,
+            -0.25, -0.15, 1.0, 0.0, -0.75, 0.15, -0.175, -0.088, 0.0, 0.35, 0.175, -0.263, 0.1,
+            0.069, -0.75, 0.175, 0.65, -0.244, 0.094, -0.184, 0.15, -0.263, -0.244, 0.447,
         );
 
         let rigidez_local_esperada = escalar * matriz_inicial;
@@ -131,5 +122,55 @@ mod tests {
         }
 
         println!("{:?}", rigidez_local_calc);
+    }
+
+    #[test]
+    fn test_rigidez_global_esparsa() {
+        //Matriz de rigidez global esperada
+        let escalar = 3.297e6;
+
+        //Matriz constitutiva
+        let espessura = 0.1;
+        let poisson = 0.3;
+        let elasticidade = 30.0e6;
+        let constitutive_matrix =
+            constitutive_matrix::constitutive_matrix("Plane stress", poisson, elasticidade);
+
+        //Dados do elemento 1
+        let x_coords_ele_01 = vec![0.0, 10.0, 10.0];
+        let y_coords_ele_01 = vec![0.0, 5.0, 15.0];
+        let rigidez_local_element_01 = matriz_rigidez_local(
+            x_coords_ele_01,
+            y_coords_ele_01,
+            espessura,
+            constitutive_matrix,
+        );
+
+        //Dados do elemento 2
+        let x_coords_el_02 = vec![0.0, 10.0, 0.0];
+        let y_coords_el_02 = vec![0.0, 15.0, 20.0];
+        let rigidez_local_element_02 = matriz_rigidez_local(
+            x_coords_el_02,
+            y_coords_el_02,
+            espessura,
+            constitutive_matrix,
+        );
+
+        //Mapeamento de cada nó em cada elemento.
+        //O índice i = nó-1
+        let elements = vec![
+            ([0, 1, 2], rigidez_local_element_01),
+            ([0, 2, 3], rigidez_local_element_02),
+        ];
+
+        //Cálculo da matriz de rigidez global
+        let k_global = rigidez_global::assemble_sparse(4, &elements);
+
+        //Imprime os resultados obtidos
+        println!("Matriz global (CSR):");
+        println!("{:?}", k_global);
+        println!("\nConvertendo para matriz densa para visualização:\n");
+        let dense = k_global.to_dense();
+        println!("{}", dense);
     }
 }
