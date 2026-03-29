@@ -115,6 +115,11 @@ pub fn reduzir_csr(k: &CsrMatrix, removidos: &[usize]) -> CsrMatrix {
     }
 }
 
+
+///////////////////////////////////////////////////
+/// Tests
+//////////////////////////////////////////////////
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -180,6 +185,7 @@ mod tests {
         assert_eq!(csr.col_ind, vec![0, 2, 1, 0, 2]);
         assert_eq!(csr.values, vec![10.0, 2.0, 20.0, 2.0, 30.0]);
     }
+    
 
     #[test]
     fn testa_dense_to_csr_2() {

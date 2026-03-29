@@ -10,6 +10,7 @@ mod local_forces;
 mod matriz_reduzida;
 mod rigidez_global;
 mod rigidez_local;
+mod matriz_reduzida_eficiente;
 
 use element::element::{Element, Triangle};
 
