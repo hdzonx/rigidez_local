@@ -30,6 +30,8 @@ mod tests {
     use crate::matriz_rigidez_local;
     use crate::rigidez_global;
 
+    use sprs::{CsMat, TriMat};
+
     #[test]
     fn calcula_rigidez_local_el_1() {
         let x_coords = vec![0.0, 10.0, 10.0];
@@ -212,7 +214,7 @@ mod tests {
             4,
             4,
             &[
-                1.3, -0.488, -0.55, 0.313, -0.488, 0.894, 0.388, -0.631, -0.55, 0.388, 1.3, -0.163,
+                1.3, -0.488, -0.55, 0.313, -0.488, 0.894, 0.338, -0.631, -0.55, 0.338, 1.3, -0.163,
                 0.313, -0.631, -0.163, 0.894,
             ],
         );
@@ -242,8 +244,31 @@ mod tests {
         // Remover DOFs 1 e 3
         let removidos = vec![0, 1, 6, 7];
 
-        let kr = matriz_reduzida_eficiente::reduzir_csr(&rigidez_global_csr, &removidos);
+        let k_reduzida = matriz_reduzida_eficiente::reduzir_csr(&rigidez_global_csr, &removidos);
 
-        println!("rigidez global reduzida = {:?}", kr);
+        println!("rigidez global reduzida = {:?}", k_reduzida);
+
+        //Avalie o erro com assertion para cada valor da matriz
+        let tol = 1e4;
+        let mut valor_esperado = 0.0;
+        let mut valor_calculado = 0.0;
+        let mut n = 0;
+        for i in 0..matriz_reduzida_esperada.nrows() {
+            for j in 0..matriz_reduzida_esperada.ncols() {
+                println!("i = {}, j ={}", i + 1, j + 1);
+                let relat_err = matriz_reduzida_esperada[(i, j)].abs() - k_reduzida.values[n].abs();
+                println!("valor esperado = {}", matriz_reduzida_esperada[(i, j)]);
+                println!("valor calculado = {}", k_reduzida.values[n]);
+
+                n += 1;
+
+                assert!(
+                    relat_err < tol,
+                    "Erro relativo alto demais: {} (esperado < {})",
+                    relat_err,
+                    tol
+                );
+            }
+        }
     }
 }
