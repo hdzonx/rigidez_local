@@ -207,7 +207,6 @@ mod tests {
     }
 
     #[test]
-
     fn reducao_matriz_rig_global() {
         let escalar = 3.297e6;
         let matriz_reduzida_nua = DMatrix::<f64>::from_row_slice(
@@ -249,7 +248,7 @@ mod tests {
         println!("rigidez global reduzida = {:?}", k_reduzida);
 
         //Avalie o erro com assertion para cada valor da matriz
-        let tol = 1e4;
+        let tol = 10.0;
         let mut valor_esperado = 0.0;
         let mut valor_calculado = 0.0;
         let mut n = 0;

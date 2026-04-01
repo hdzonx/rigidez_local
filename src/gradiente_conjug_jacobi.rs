@@ -235,7 +235,7 @@ mod tests {
     }
 
     #[test]
-    fn test_pcg_jacobi_result_x() {
+    fn test_pcg_jacobi_result_4() {
         let scale = 3.297e6;
 
         let dense = vec![
@@ -267,5 +267,54 @@ mod tests {
 
         println!("Erro = {}", error);
         assert!(error < 1e-6);
+    }
+
+    #[test]
+    fn test_pcg_jacobi_05() {
+        let scale = 3.297e6;
+
+        let dense = vec![
+            vec![4.89e8, -1.67e8, 0.44e8, -0.33e8],
+            vec![-1.67e8, 4.89e8, 0.33e8, -2.89e8],
+            vec![0.44e8, 0.33e8, 4.89e8, 1.67e8],
+            vec![-0.33e8, -2.89e8, 1.67e8, 4.89e8],
+        ];
+
+        println!("Threads Rayon used: {}", rayon::current_num_threads());
+        //Sistema [a] [x] = [b]
+        let a = CsrMatrix::from_dense(&dense);
+        let b = vec![1e5, 0.0, -1e5, 0.0];
+        println!("a = {:?}", a);
+        println!("b = {:?}", b);
+
+        let x = conjugate_gradient_jacobi(&a, &b, 1000, 1e-12);
+        println!("x = {:?}", x);
+
+        // Multiplicação [a][x]
+        let ax = a.matvec(&x);
+        println!("ax = {:?}", ax);
+
+        let error = ax
+            .iter()
+            .zip(b.iter())
+            .map(|(ax_i, b_i)| (ax_i - b_i).powi(2))
+            .sum::<f64>()
+            .sqrt();
+
+        println!("Erro = {}", error);
+        assert!(error < 1e-8);
+
+        //Avaliando o erro do vetor X
+        //a.x = b
+        let x_expected = [0.4091e-3, 0.4091e-3, -0.4091e-3, 0.4091e-3];
+        let error_x = x
+            .iter()
+            .zip(x_expected.iter())
+            .map(|(x_i, x_i_exp)| (x_i - x_i_exp).powi(2))
+            .sum::<f64>()
+            .sqrt();
+
+        println!("Erro de X = {}", error_x);
+        assert!(error_x < 1e-5);
     }
 }
