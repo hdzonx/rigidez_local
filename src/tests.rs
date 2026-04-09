@@ -249,8 +249,6 @@ mod tests {
 
         //Avalie o erro com assertion para cada valor da matriz
         let tol = 10.0;
-        let mut valor_esperado = 0.0;
-        let mut valor_calculado = 0.0;
         let mut n = 0;
         for i in 0..matriz_reduzida_esperada.nrows() {
             for j in 0..matriz_reduzida_esperada.ncols() {
