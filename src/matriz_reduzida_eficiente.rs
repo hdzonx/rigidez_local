@@ -196,7 +196,7 @@ mod tests {
     fn test_row_ptr_monotonicity() {
         let mat = DMatrix::from_row_slice(3, 3, &[1.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 3.0]);
 
-        println!("matriz = {}",mat);
+        println!("matriz = {}", mat);
 
         let csr = dense_to_csr(&mat, 1e-12);
 
@@ -207,5 +207,110 @@ mod tests {
 
         // último valor = número total de nnz
         assert_eq!(csr.row_ptr.last().copied().unwrap(), csr.values.len());
+    }
+    #[test]
+    fn reducao_matriz_rig_global() {
+        let matriz_reduzida_esperada = DMatrix::<f64>::from_row_slice(
+            4,
+            4,
+            &[
+                2.11e3, 2.81e3, -1.88e3, 3.75e3, 2.81e3, 15.0e3, -3.75e3, 5.0e3, -1.88e3, -3.75e3,
+                1.88e3, -3.75e3, 3.75e3, 5.0e3, -3.75e3, 10.0e3,
+            ],
+        );
+
+        let rigidez_global_densa = DMatrix::<f64>::from_row_slice(
+            6,
+            6,
+            &[
+                0.23e3, 0.94e3, -0.23e3, 0.94e3, 0.0, 0.0, 0.94e3, 5.0e3, -0.94e3, 2.50e3, 0.0,
+                0.0, -0.23e3, -0.94e3, 2.11e3, 2.81e3, -1.88e3, 3.75e3, 0.94e3, 2.5e3, 2.81e3,
+                15.0e3, -3.75e3, 5.0e3, 0.0, 0.0, -1.88e3, -3.75e3, 1.88e3, -3.75e3, 0.0, 0.0,
+                3.75e3, 5.0e3, -3.75e3, 10.0e3,
+            ],
+        );
+
+        //Transforma a matriz densa (esparsa) numa matriz csr
+        let rigidez_global_csr = dense_to_csr(&rigidez_global_densa, 1e-12);
+
+        println!("rigidez global csr = {:?}", rigidez_global_csr);
+
+        // Remover DOFs 1 e 3
+        let removidos = vec![0, 1];
+
+        let k_reduzida = reduzir_csr(&rigidez_global_csr, &removidos);
+
+        println!("rigidez global reduzida = {:?}", k_reduzida);
+
+        //Avalie o erro com assertion para cada valor da matriz
+        let tol = 0.01;
+        let mut n = 0;
+        for i in 0..matriz_reduzida_esperada.nrows() {
+            for j in 0..matriz_reduzida_esperada.ncols() {
+                println!("i = {}, j ={}", i + 1, j + 1);
+                let relat_err = matriz_reduzida_esperada[(i, j)].abs() - k_reduzida.values[n].abs();
+                println!("valor esperado = {}", matriz_reduzida_esperada[(i, j)]);
+                println!("valor calculado = {}", k_reduzida.values[n]);
+
+                n += 1;
+
+                assert!(
+                    relat_err < tol,
+                    "Erro relativo alto demais: {} (esperado < {})",
+                    relat_err,
+                    tol
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn reducao_matriz_rig_global_2() {
+        let matriz_reduzida_esperada =
+            DMatrix::<f64>::from_row_slice(2, 2, &[0.23e3, 0.94e3, 0.94e3, 5.0e3]);
+
+        let rigidez_global_densa = DMatrix::<f64>::from_row_slice(
+            6,
+            6,
+            &[
+                0.23e3, 0.94e3, -0.23e3, 0.94e3, 0.0, 0.0, 0.94e3, 5.0e3, -0.94e3, 2.50e3, 0.0,
+                0.0, -0.23e3, -0.94e3, 2.11e3, 2.81e3, -1.88e3, 3.75e3, 0.94e3, 2.5e3, 2.81e3,
+                15.0e3, -3.75e3, 5.0e3, 0.0, 0.0, -1.88e3, -3.75e3, 1.88e3, -3.75e3, 0.0, 0.0,
+                3.75e3, 5.0e3, -3.75e3, 10.0e3,
+            ],
+        );
+
+        //Transforma a matriz densa (esparsa) numa matriz csr
+        let rigidez_global_csr = dense_to_csr(&rigidez_global_densa, 1e-12);
+
+        println!("rigidez global csr = {:?}", rigidez_global_csr);
+
+        // Remover DOFs 1 e 3
+        let removidos = vec![2, 3, 4, 5];
+
+        let k_reduzida = reduzir_csr(&rigidez_global_csr, &removidos);
+
+        println!("rigidez global reduzida = {:?}", k_reduzida);
+
+        //Avalie o erro com assertion para cada valor da matriz
+        let tol = 0.01;
+        let mut n = 0;
+        for i in 0..matriz_reduzida_esperada.nrows() {
+            for j in 0..matriz_reduzida_esperada.ncols() {
+                println!("i = {}, j ={}", i + 1, j + 1);
+                let relat_err = matriz_reduzida_esperada[(i, j)].abs() - k_reduzida.values[n].abs();
+                println!("valor esperado = {}", matriz_reduzida_esperada[(i, j)]);
+                println!("valor calculado = {}", k_reduzida.values[n]);
+
+                n += 1;
+
+                assert!(
+                    relat_err < tol,
+                    "Erro relativo alto demais: {} (esperado < {})",
+                    relat_err,
+                    tol
+                );
+            }
+        }
     }
 }
