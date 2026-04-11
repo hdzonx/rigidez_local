@@ -26,6 +26,7 @@ mod tests {
 
     use crate::area_triangulo;
     use crate::constitutive_matrix;
+    use crate::gradiente_conjug_jacobi;
     use crate::matriz_reduzida_eficiente;
     use crate::matriz_rigidez_local;
     use crate::rigidez_global;
@@ -267,5 +268,44 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn resolve_sistema_eq() {
+        let escalar = 3.297e6;
+        let matriz_reduzida_nua = DMatrix::<f64>::from_row_slice(
+            4,
+            4,
+            &[
+                1.3, -0.488, -0.55, 0.313, -0.488, 0.894, 0.338, -0.631, -0.55, 0.338, 1.3, -0.163,
+                0.313, -0.631, -0.163, 0.894,
+            ],
+        );
+
+        let matriz_nua = DMatrix::<f64>::from_row_slice(
+            8,
+            8,
+            &[
+                0.65, 0.081, -0.75, 0.15, 0.0, -0.325, 0.1, 0.094, 0.081, 0.447, 0.175, -0.263,
+                -0.325, 0.0, 0.069, -0.184, -0.75, 0.175, 1.3, -0.488, -0.55, 0.313, 0.0, 0.0,
+                0.15, -0.263, -0.488, 0.894, 0.338, -0.631, 0.0, 0.0, 0.0, -0.325, -0.55, 0.338,
+                1.3, -0.163, -0.75, 0.15, -0.325, 0.0, 0.313, -0.631, -0.163, 0.894, 0.175, -0.263,
+                0.1, 0.069, 0.0, 0.0, -0.75, 0.175, 0.65, -0.244, 0.094, -0.184, 0.0, 0.0, 0.15,
+                -0.263, -0.244, 0.447,
+            ],
+        );
+        let rigidez_global_densa = escalar * matriz_nua;
+
+        //Transforma a matriz densa (esparsa) numa matriz csr
+        let rigidez_global_csr =
+            matriz_reduzida_eficiente::dense_to_csr(&rigidez_global_densa, 1e-12);
+
+        // Remover DOFs 1 e 3
+        let removidos = vec![0, 1, 6, 7];
+
+        let k_reduzida = matriz_reduzida_eficiente::reduzir_csr(&rigidez_global_csr, &removidos);
+
+        let b = vec![0.0, -50000.0, 50000.0, 0.0];
+       // let x = gradiente_conjug_jacobi::conjugate_gradient_jacobi(&k_reduzida, &b, 1000, 1e-12);
     }
 }
