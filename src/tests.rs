@@ -237,14 +237,15 @@ mod tests {
 
         //Transforma a matriz densa (esparsa) numa matriz csr
         let rigidez_global_csr =
-            matriz_reduzida_eficiente::dense_to_csr(&rigidez_global_densa, 1e-12);
+            gradiente_conjug_jacobi::dense_to_csr(&rigidez_global_densa, 1e-12);
 
         println!("rigidez global csr = {:?}", rigidez_global_csr);
 
         // Remover DOFs 1 e 3
         let removidos = vec![0, 1, 6, 7];
 
-        let k_reduzida = matriz_reduzida_eficiente::reduzir_csr(&rigidez_global_csr, &removidos);
+        let k_reduzida =
+            gradiente_conjug_jacobi::reduzir_matriz_k_global_csr(&rigidez_global_csr, &removidos);
 
         println!("rigidez global reduzida = {:?}", k_reduzida);
 
@@ -298,14 +299,29 @@ mod tests {
 
         //Transforma a matriz densa (esparsa) numa matriz csr
         let rigidez_global_csr =
-            matriz_reduzida_eficiente::dense_to_csr(&rigidez_global_densa, 1e-12);
+            gradiente_conjug_jacobi::dense_to_csr(&rigidez_global_densa, 1e-12);
 
         // Remover DOFs 1 e 3
         let removidos = vec![0, 1, 6, 7];
 
-        let k_reduzida = matriz_reduzida_eficiente::reduzir_csr(&rigidez_global_csr, &removidos);
+        let k_reduzida =
+            gradiente_conjug_jacobi::reduzir_matriz_k_global_csr(&rigidez_global_csr, &removidos);
 
         let b = vec![0.0, -50000.0, 50000.0, 0.0];
-       // let x = gradiente_conjug_jacobi::conjugate_gradient_jacobi(&k_reduzida, &b, 1000, 1e-12);
+        let x = gradiente_conjug_jacobi::conjugate_gradient_jacobi(&k_reduzida, &b, 1000, 1e-12);
+        println!("x = {:?}", x);
+
+        //Avaliando o erro do vetor X
+        //a.x = b
+        let x_expected = [-2.147e-3, -4.455e-2, 1.891e-2, -2.727e-2];
+        let error_x = x
+            .iter()
+            .zip(x_expected.iter())
+            .map(|(x_i, x_i_exp)| (x_i - x_i_exp).powi(2))
+            .sum::<f64>()
+            .sqrt();
+
+        println!("Erro de X = {}", error_x);
+        assert!(error_x < 1e-3);
     }
 }
