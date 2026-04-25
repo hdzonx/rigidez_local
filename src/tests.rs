@@ -17,17 +17,13 @@
 use sprs::{CsMat, TriMat};
 #[cfg(test)]
 mod tests {
-    use approx::assert_relative_eq;
-    //use approx::relative_eq;
     use nalgebra::DMatrix;
-    use nalgebra::Matrix3;
     use nalgebra::Matrix6;
     use nalgebra::SMatrix;
 
     use crate::area_triangulo;
     use crate::constitutive_matrix;
     use crate::gradiente_conjug_jacobi;
-    use crate::matriz_reduzida_eficiente;
     use crate::matriz_rigidez_local;
     use crate::rigidez_global;
 

@@ -2,6 +2,7 @@ use std::vec;
 mod constitutive_matrix;
 mod element;
 mod tests;
+mod test2;
 mod global_force;
 mod gradiente_conjug_jacobi;
 mod gradiente_conjugado;
