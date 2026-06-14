@@ -1,4 +1,3 @@
-use crate::gradiente_conjug_jacobi::CsrMatrix;
 use nalgebra::{DMatrix, SMatrix};
 use sprs::{CsMat, TriMat};
 
@@ -24,13 +23,16 @@ pub fn assemble_global_triangle(
 
     k_global
 }
+
 //Eficiente para matriz esparsa
-pub fn assemble_sparse(num_nodes: usize, elements: &Vec<([usize; 3], Matrix6)>) -> CsrMatrix {
+pub fn assemble_sparse(num_nodes: usize, elements: &Vec<([usize; 3], Matrix6)>) -> CsMat<f64> {
     let total_dofs = num_nodes * 2;
 
+    // matriz em formato triplet (COO)
     let mut triplet = TriMat::<f64>::new((total_dofs, total_dofs));
 
     for (nodes, k_local) in elements {
+        // mapear DOFs globais
         let dofs = [
             2 * nodes[0],
             2 * nodes[0] + 1,
@@ -47,14 +49,8 @@ pub fn assemble_sparse(num_nodes: usize, elements: &Vec<([usize; 3], Matrix6)>) 
         }
     }
 
-    let csr = triplet.to_csr();
-
-    CsrMatrix {
-        values: csr.data().to_vec(),
-        col_indices: csr.indices().to_vec(),
-        row_ptr: csr.indptr().raw_storage().to_vec(),
-        n: total_dofs,
-    }
+    // converte para CSR (compactado e eficiente)
+    triplet.to_csr()
 }
 
 #[cfg(test)]
@@ -98,8 +94,8 @@ mod tests {
 
         println!("\nConvertendo para matriz densa para visualização:\n");
 
-       // let dense = k_global.to_dense();
-      //  println!("{}", dense);
+        let dense = k_global.to_dense();
+        println!("{}", dense);
     }
 
     #[test]
@@ -128,7 +124,7 @@ mod tests {
 
         println!("\nConvertendo para matriz densa para visualização:\n");
 
-       // let dense = k_global.to_dense();
-       // println!("{}", dense);
+        let dense = k_global.to_dense();
+        println!("{}", dense);
     }
 }

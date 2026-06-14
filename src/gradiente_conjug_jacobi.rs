@@ -4,9 +4,9 @@ use rayon::prelude::*;
 #[derive(Debug, Clone)]
 pub struct CsrMatrix {
     pub values: Vec<f64>,
-    col_indices: Vec<usize>,
-    row_ptr: Vec<usize>,
-    n: usize,
+    pub col_indices: Vec<usize>,
+    pub row_ptr: Vec<usize>,
+    pub n: usize,
 }
 
 impl CsrMatrix {
@@ -131,7 +131,7 @@ pub fn conjugate_gradient_jacobi(a: &CsrMatrix, b: &[f64], max_iter: usize, tol:
     x
 }
 //=====================================
-//Redução da matriz de rigidez global usando paralelização (o mesmo do arquivo matreiz_reduzida_eficiente)
+//Redução da matriz de rigidez global usando paralelização (o mesmo do arquivo matriz_reduzida_eficiente)
 //====================================
 
 pub fn dense_to_csr(mat: &DMatrix<f64>, tol: f64) -> CsrMatrix {
