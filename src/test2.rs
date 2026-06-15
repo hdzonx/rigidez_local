@@ -21,11 +21,11 @@ mod test {
     use nalgebra::Matrix6;
     use nalgebra::SMatrix;
 
-    use crate::area_triangulo;
+
     use crate::constitutive_matrix;
     use crate::gradiente_conjug_jacobi;
     use crate::matriz_reduzida_eficiente;
-    use crate::matriz_rigidez_local;
+    use crate::rigidez_local;
     use crate::rigidez_global;
 
     use sprs::{CsMat, TriMat};
@@ -74,28 +74,28 @@ mod test {
 
         //Rigidez do elemento 1
         let rigidez_local_el_1 =
-            matriz_rigidez_local(x_coords_el_1, y_coords_el_1, espessura, constitutive_matrix);
+           rigidez_local:: matriz_rigidez_local(x_coords_el_1, y_coords_el_1, espessura, constitutive_matrix);
         //Rigidez do elemento 2
         let rigidez_local_el_2 =
-            matriz_rigidez_local(x_coords_el_2, y_coords_el_2, espessura, constitutive_matrix);
+           rigidez_local:: matriz_rigidez_local(x_coords_el_2, y_coords_el_2, espessura, constitutive_matrix);
         //Rigidez do elemento 3
         let rigidez_local_el_3 =
-            matriz_rigidez_local(x_coords_el_3, y_coords_el_3, espessura, constitutive_matrix);
+         rigidez_local::   matriz_rigidez_local(x_coords_el_3, y_coords_el_3, espessura, constitutive_matrix);
         //Rigidez do elemento 4
         let rigidez_local_el_4 =
-            matriz_rigidez_local(x_coords_el_4, y_coords_el_4, espessura, constitutive_matrix);
+          rigidez_local::  matriz_rigidez_local(x_coords_el_4, y_coords_el_4, espessura, constitutive_matrix);
         //Rigidez do elemento 5
         let rigidez_local_el_5 =
-            matriz_rigidez_local(x_coords_el_5, y_coords_el_5, espessura, constitutive_matrix);
+          rigidez_local::  matriz_rigidez_local(x_coords_el_5, y_coords_el_5, espessura, constitutive_matrix);
         //Rigidez do elemento 6
         let rigidez_local_el_6 =
-            matriz_rigidez_local(x_coords_el_6, y_coords_el_6, espessura, constitutive_matrix);
+          rigidez_local::  matriz_rigidez_local(x_coords_el_6, y_coords_el_6, espessura, constitutive_matrix);
         //Rigidez do elemento 7
         let rigidez_local_el_7 =
-            matriz_rigidez_local(x_coords_el_7, y_coords_el_7, espessura, constitutive_matrix);
+         rigidez_local::   matriz_rigidez_local(x_coords_el_7, y_coords_el_7, espessura, constitutive_matrix);
         //Rigidez do elemento 8
         let rigidez_local_el_8 =
-            matriz_rigidez_local(x_coords_el_8, y_coords_el_8, espessura, constitutive_matrix);
+          rigidez_local::  matriz_rigidez_local(x_coords_el_8, y_coords_el_8, espessura, constitutive_matrix);
 
         //Mapeamento de cada nó em cada elemento.
         //O índice i = nó-1

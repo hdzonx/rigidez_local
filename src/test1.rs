@@ -24,11 +24,12 @@ mod test {
     use nalgebra::Matrix6;
     use nalgebra::SMatrix;
 
-    use crate::area_triangulo;
+
     use crate::constitutive_matrix;
     use crate::gradiente_conjug_jacobi;
-    use crate::matriz_rigidez_local;
+    use crate::rigidez_local;
     use crate::rigidez_global;
+
 
     use sprs::{CsMat, TriMat};
 
@@ -47,14 +48,14 @@ mod test {
         let constitutive_matrix =
             constitutive_matrix::constitutive_matrix("Plane stress", poisson, elasticidade);
 
-        let rigidez_local_element_01 = matriz_rigidez_local(
+        let rigidez_local_element_01 =rigidez_local:: matriz_rigidez_local(
             x_coords_elem_1,
             y_coords_elem_1,
             espessura,
             constitutive_matrix,
         );
 
-        let rigidez_local_element_02 = matriz_rigidez_local(
+        let rigidez_local_element_02 =rigidez_local:: matriz_rigidez_local(
             x_coords_elem_2,
             y_coords_elem_2,
             espessura,
@@ -125,14 +126,14 @@ mod test {
         let constitutive_matrix =
             constitutive_matrix::constitutive_matrix("Plane stress", poisson, elasticidade);
 
-        let rigidez_local_element_01 = matriz_rigidez_local(
+        let rigidez_local_element_01 = rigidez_local::matriz_rigidez_local(
             x_coords_elem_1,
             y_coords_elem_1,
             espessura,
             constitutive_matrix,
         );
 
-        let rigidez_local_element_02 = matriz_rigidez_local(
+        let rigidez_local_element_02 = rigidez_local::matriz_rigidez_local(
             x_coords_elem_2,
             y_coords_elem_2,
             espessura,
@@ -204,14 +205,14 @@ mod test {
         let constitutive_matrix =
             constitutive_matrix::constitutive_matrix("Plane stress", poisson, elasticidade);
 
-        let rigidez_local_element_01 = matriz_rigidez_local(
+        let rigidez_local_element_01 =rigidez_local:: matriz_rigidez_local(
             x_coords_elem_1,
             y_coords_elem_1,
             espessura,
             constitutive_matrix,
         );
 
-        let rigidez_local_element_02 = matriz_rigidez_local(
+        let rigidez_local_element_02 =rigidez_local:: matriz_rigidez_local(
             x_coords_elem_2,
             y_coords_elem_2,
             espessura,
@@ -231,7 +232,7 @@ mod test {
         let k_reduzida =
             gradiente_conjug_jacobi::reduzir_matriz_k_global_csr(&k_global, &removidos);
 
-        let b = vec![50000.0, 0.0, 0.0,-50000.0];
+        let b = vec![50000.0, 0.0, 0.0, -50000.0];
         let x = gradiente_conjug_jacobi::conjugate_gradient_jacobi(&k_reduzida, &b, 1000, 1e-12);
         println!("x = {:?}", x);
         //Avaliando o erro do vetor X

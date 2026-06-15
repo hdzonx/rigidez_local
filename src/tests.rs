@@ -21,11 +21,10 @@ mod tests {
     use nalgebra::Matrix6;
     use nalgebra::SMatrix;
 
-    use crate::area_triangulo;
     use crate::constitutive_matrix;
     use crate::gradiente_conjug_jacobi;
-    use crate::matriz_rigidez_local;
     use crate::rigidez_global;
+    use crate::rigidez_local;
 
     use sprs::{CsMat, TriMat};
 
@@ -34,7 +33,7 @@ mod tests {
         let x_coords = vec![0.0, 10.0, 10.0];
         let y_coords = vec![0.0, 5.0, 15.0];
 
-        let area = area_triangulo(&x_coords, &y_coords);
+        let area = rigidez_local::area_triangulo(&x_coords, &y_coords);
         let espessura = 0.1;
 
         let escalar = 3.297e6;
@@ -53,7 +52,7 @@ mod tests {
             constitutive_matrix::constitutive_matrix("Plane stress", poisson, elasticidade);
 
         let rigidez_local_calc =
-            matriz_rigidez_local(x_coords, y_coords, espessura, constitutive_matrix);
+            rigidez_local::matriz_rigidez_local(x_coords, y_coords, espessura, constitutive_matrix);
 
         //Avalie o erro com assertion para cada valor da matriz
         for i in 0..rigidez_local_esperada.nrows() {
@@ -82,7 +81,7 @@ mod tests {
         let x_coords = vec![0.0, 10.0, 0.0];
         let y_coords = vec![0.0, 15.0, 20.0];
 
-        let area = area_triangulo(&x_coords, &y_coords);
+        let area = rigidez_local::area_triangulo(&x_coords, &y_coords);
         let espessura = 0.1;
 
         let escalar = 3.297e6;
@@ -101,7 +100,7 @@ mod tests {
             constitutive_matrix::constitutive_matrix("Plane stress", poisson, elasticidade);
 
         let rigidez_local_calc =
-            matriz_rigidez_local(x_coords, y_coords, espessura, constitutive_matrix);
+            rigidez_local::matriz_rigidez_local(x_coords, y_coords, espessura, constitutive_matrix);
 
         //Avalie o erro com assertion para cada valor da matriz
         for i in 0..rigidez_local_esperada.nrows() {
@@ -149,7 +148,7 @@ mod tests {
         //Dados do elemento 1
         let x_coords_ele_01 = vec![0.0, 10.0, 10.0];
         let y_coords_ele_01 = vec![0.0, 5.0, 15.0];
-        let rigidez_local_element_01 = matriz_rigidez_local(
+        let rigidez_local_element_01 = rigidez_local::matriz_rigidez_local(
             x_coords_ele_01,
             y_coords_ele_01,
             espessura,
@@ -159,7 +158,7 @@ mod tests {
         //Dados do elemento 2
         let x_coords_el_02 = vec![0.0, 10.0, 0.0];
         let y_coords_el_02 = vec![0.0, 15.0, 20.0];
-        let rigidez_local_element_02 = matriz_rigidez_local(
+        let rigidez_local_element_02 = rigidez_local::matriz_rigidez_local(
             x_coords_el_02,
             y_coords_el_02,
             espessura,
@@ -180,25 +179,25 @@ mod tests {
         println!("Matriz global (CSR):");
         println!("{:?}", k_global);
         println!("\nConvertendo para matriz densa para visualização:\n");
-       // let dense_global_k = k_global.to_dense();
-       // println!("{}", dense_global_k);
+        // let dense_global_k = k_global.to_dense();
+        // println!("{}", dense_global_k);
 
         //Avalie o erro com assertion para cada valor da matriz
         let tol = 1e4;
         for i in 0..rigidez_global_esperada.nrows() {
             for j in 0..rigidez_global_esperada.ncols() {
                 println!("i = {}, j ={}", i + 1, j + 1);
-             //   let relat_err = (rigidez_global_esperada[(i, j)] - dense_global_k[(i, j)]).abs();
+                //   let relat_err = (rigidez_global_esperada[(i, j)] - dense_global_k[(i, j)]).abs();
 
-            //    println!("calculado = {}", dense_global_k[(i, j)]);
+                //    println!("calculado = {}", dense_global_k[(i, j)]);
                 println!("esperado = {}", rigidez_global_esperada[(i, j)]);
 
-              //  assert!(
-              //      relat_err < tol,
-              //      "Erro relativo alto demais: {} (esperado < {})",
-              //      relat_err,
-              //      tol
-              //  );
+                //  assert!(
+                //      relat_err < tol,
+                //      "Erro relativo alto demais: {} (esperado < {})",
+                //      relat_err,
+                //      tol
+                //  );
             }
         }
     }
