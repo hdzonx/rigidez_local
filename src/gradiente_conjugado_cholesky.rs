@@ -29,7 +29,7 @@ use rayon::prelude::*;
 // ================================================================
 #[derive(Clone, Debug)]
 pub struct CsrMatrix {
-    pub n: usize,          // dimensão da matriz
+    pub n: usize,            // dimensão da matriz
     pub row_ptr: Vec<usize>, // ponteiros de linha (tamanho n+1)
     pub col_ind: Vec<usize>, // índices de coluna
     pub values: Vec<f64>,    // valores não nulos
@@ -189,7 +189,9 @@ pub fn icc0(a: &CsrMatrix) -> CsrMatrix {
     for i in 0..n {
         for idx in l.row_ptr[i]..l.row_ptr[i + 1] {
             let j = l.col_ind[idx];
-            if j >= i { break; }
+            if j >= i {
+                break;
+            }
 
             let mut sum = l.values[idx];
             let mut p = l.row_ptr[i];
@@ -326,7 +328,6 @@ pub fn pcg_icc(a: &CsrMatrix, b: &[f64], tol: f64, max_iter: usize) -> Vec<f64> 
     x
 }
 
-
 pub fn csr_transpose(a: &CsrMatrix) -> CsrMatrix {
     let n = a.n;
     let mut nnz_per_col = vec![0usize; n];
@@ -354,14 +355,18 @@ pub fn csr_transpose(a: &CsrMatrix) -> CsrMatrix {
         }
     }
 
-    CsrMatrix { n, row_ptr, col_ind, values }
+    CsrMatrix {
+        n,
+        row_ptr,
+        col_ind,
+        values,
+    }
 }
 
 // ================================================================
 // TESTES UNITÁRIOS
 // Verifica consistência do solver PCG + ICC
 // ================================================================
-#[cfg(test)]
 mod tests {
     use super::*;
 
@@ -373,12 +378,11 @@ mod tests {
         CsrMatrix {
             n: 3,
             row_ptr: vec![0, 2, 5, 7],
-            col_ind: vec![0,1, 0,1,2, 1,2],
-            values: vec![4.0,1.0, 1.0,3.0,1.0, 1.0,2.0],
+            col_ind: vec![0, 1, 0, 1, 2, 1, 2],
+            values: vec![4.0, 1.0, 1.0, 3.0, 1.0, 1.0, 2.0],
         }
     }
 
-    #[test]
     fn testa_pcg_icc() {
         let a = matriz_teste();
         let b = vec![1.0, 2.0, 0.0];
