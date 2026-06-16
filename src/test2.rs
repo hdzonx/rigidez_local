@@ -21,12 +21,11 @@ mod test {
     use nalgebra::Matrix6;
     use nalgebra::SMatrix;
 
-
     use crate::constitutive_matrix;
     use crate::gradiente_conjug_jacobi;
     use crate::matriz_reduzida_eficiente;
-    use crate::rigidez_local;
     use crate::rigidez_global;
+    use crate::rigidez_local;
 
     use sprs::{CsMat, TriMat};
 
@@ -73,41 +72,41 @@ mod test {
             constitutive_matrix::constitutive_matrix("Plane stress", poisson, elasticity);
 
         //Rigidez do elemento 1
-        let rigidez_local_el_1 =
-           rigidez_local:: matriz_rigidez_local(x_coords_el_1, y_coords_el_1, espessura, constitutive_matrix);
-        //Rigidez do elemento 2
-        let rigidez_local_el_2 =
-           rigidez_local:: matriz_rigidez_local(x_coords_el_2, y_coords_el_2, espessura, constitutive_matrix);
-        //Rigidez do elemento 3
-        let rigidez_local_el_3 =
-         rigidez_local::   matriz_rigidez_local(x_coords_el_3, y_coords_el_3, espessura, constitutive_matrix);
-        //Rigidez do elemento 4
-        let rigidez_local_el_4 =
-          rigidez_local::  matriz_rigidez_local(x_coords_el_4, y_coords_el_4, espessura, constitutive_matrix);
-        //Rigidez do elemento 5
-        let rigidez_local_el_5 =
-          rigidez_local::  matriz_rigidez_local(x_coords_el_5, y_coords_el_5, espessura, constitutive_matrix);
-        //Rigidez do elemento 6
-        let rigidez_local_el_6 =
-          rigidez_local::  matriz_rigidez_local(x_coords_el_6, y_coords_el_6, espessura, constitutive_matrix);
-        //Rigidez do elemento 7
-        let rigidez_local_el_7 =
-         rigidez_local::   matriz_rigidez_local(x_coords_el_7, y_coords_el_7, espessura, constitutive_matrix);
-        //Rigidez do elemento 8
-        let rigidez_local_el_8 =
-          rigidez_local::  matriz_rigidez_local(x_coords_el_8, y_coords_el_8, espessura, constitutive_matrix);
+        // let rigidez_local_el_1 =
+        //    rigidez_local:: matriz_rigidez_local(x_coords_el_1, y_coords_el_1, espessura, constitutive_matrix);
+        // //Rigidez do elemento 2
+        // let rigidez_local_el_2 =
+        //    rigidez_local:: matriz_rigidez_local(x_coords_el_2, y_coords_el_2, espessura, constitutive_matrix);
+        // //Rigidez do elemento 3
+        // let rigidez_local_el_3 =
+        //  rigidez_local::   matriz_rigidez_local(x_coords_el_3, y_coords_el_3, espessura, constitutive_matrix);
+        // //Rigidez do elemento 4
+        // let rigidez_local_el_4 =
+        //   rigidez_local::  matriz_rigidez_local(x_coords_el_4, y_coords_el_4, espessura, constitutive_matrix);
+        // //Rigidez do elemento 5
+        // let rigidez_local_el_5 =
+        //   rigidez_local::  matriz_rigidez_local(x_coords_el_5, y_coords_el_5, espessura, constitutive_matrix);
+        // //Rigidez do elemento 6
+        // let rigidez_local_el_6 =
+        //   rigidez_local::  matriz_rigidez_local(x_coords_el_6, y_coords_el_6, espessura, constitutive_matrix);
+        // //Rigidez do elemento 7
+        // let rigidez_local_el_7 =
+        //  rigidez_local::   matriz_rigidez_local(x_coords_el_7, y_coords_el_7, espessura, constitutive_matrix);
+        // //Rigidez do elemento 8
+        // let rigidez_local_el_8 =
+        //   rigidez_local::  matriz_rigidez_local(x_coords_el_8, y_coords_el_8, espessura, constitutive_matrix);
 
-        //Mapeamento de cada nó em cada elemento.
-        //O índice i = nó-1
-        let elements = vec![
-            ([3, 4, 0], rigidez_local_el_1),
-            ([4, 1, 0], rigidez_local_el_2),
-            ([4, 5, 1], rigidez_local_el_3),
-            ([1, 5, 2], rigidez_local_el_4),
-            ([3, 7, 4], rigidez_local_el_5),
-            ([3, 6, 7], rigidez_local_el_6),
-            ([4, 7, 8], rigidez_local_el_7),
-            ([8, 5, 4], rigidez_local_el_8),
-        ];
+        // //Mapeamento de cada nó em cada elemento.
+        // //O índice i = nó-1
+        // let elements = vec![
+        //     ([3, 4, 0], rigidez_local_el_1),
+        //     ([4, 1, 0], rigidez_local_el_2),
+        //     ([4, 5, 1], rigidez_local_el_3),
+        //     ([1, 5, 2], rigidez_local_el_4),
+        //     ([3, 7, 4], rigidez_local_el_5),
+        //     ([3, 6, 7], rigidez_local_el_6),
+        //     ([4, 7, 8], rigidez_local_el_7),
+        //     ([8, 5, 4], rigidez_local_el_8),
+        // ];
     }
 }

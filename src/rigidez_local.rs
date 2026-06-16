@@ -3,6 +3,7 @@ use nalgebra::{Const, Matrix3, Matrix3x6, Matrix6};
 pub fn matriz_rigidez_local(
     x_coords: Vec<f64>,
     y_coords: Vec<f64>,
+    global_node_num: &Vec<usize>,
     espessura: f64,
     constitutive_matrix: Matrix3<f64>,
 ) -> Matrix6<f64> {
@@ -22,6 +23,8 @@ pub fn matriz_rigidez_local(
 
     let mut det_jacobian = x13 * y23 - x23 * y13;
 
+    let mut global_node_num_update: Vec<usize> = global_node_num.clone();
+
     if det_jacobian < 0.0 {
         // se o determinante do jacobiano for menor que zero,
         //significa que o giro no triângulo será horário. Neste caso,
@@ -37,6 +40,8 @@ pub fn matriz_rigidez_local(
         y13 = y1 - y3;
         x13 = x1 - x3;
         x23 = x2 - x3;
+        global_node_num_update = vec![global_node_num[0],global_node_num[2],global_node_num[1]];
+
 
         det_jacobian = x13 * y23 - x23 * y13;
     }
@@ -46,6 +51,7 @@ pub fn matriz_rigidez_local(
     let y31 = y3 - y1;
     let y12 = y1 - y2;
 
+    println!("global nodes update = {:?}", global_node_num_update);
     println!("determinante de J = {}", det_jacobian);
 
     let m: nalgebra::Matrix<f64, Const<3>, Const<6>, nalgebra::ArrayStorage<f64, 3, 6>> =
@@ -112,7 +118,6 @@ mod tests {
     use nalgebra::Matrix3;
     use nalgebra::Matrix6;
 
-
     use crate::rigidez_local;
 
     #[test]
@@ -141,9 +146,10 @@ mod tests {
         let constitutive_matrix =
             Matrix3::new(220800., 55200., 0., 55200., 220800., 0., 0., 0., 82800.);
 
-        let matriz_calc =rigidez_local:: matriz_rigidez_local(
+        let matriz_calc = rigidez_local::matriz_rigidez_local(
             vec![75.0, 0.0, 75.0],
             vec![0.0, 0.0, 50.0],
+            &vec![1, 2, 3],
             espessura,
             constitutive_matrix,
         );
@@ -176,6 +182,7 @@ mod tests {
         let matriz_calc = rigidez_local::matriz_rigidez_local(
             vec![0.0, 0.0, 75.0],
             vec![50.0, 0.0, 50.0],
+            &vec![1, 2, 3],
             espessura,
             constitutive_matrix,
         );

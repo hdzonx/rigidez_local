@@ -24,12 +24,10 @@ mod test {
     use nalgebra::Matrix6;
     use nalgebra::SMatrix;
 
-
     use crate::constitutive_matrix;
     use crate::gradiente_conjug_jacobi;
-    use crate::rigidez_local;
     use crate::rigidez_global;
-
+    use crate::rigidez_local;
 
     use sprs::{CsMat, TriMat};
 
@@ -37,9 +35,11 @@ mod test {
     fn estrutura_completa_teste_1() {
         let x_coords_elem_1 = vec![0.0, 10.0, 10.0];
         let y_coords_elem_1 = vec![0.0, 5.0, 15.0];
+        let global_node_ele_1: Vec<usize> = vec![0, 1, 2];
 
         let x_coords_elem_2 = vec![0.0, 10.0, 0.0];
         let y_coords_elem_2 = vec![0.0, 15.0, 20.0];
+        let global_node_ele_2: Vec<usize> = vec![0, 2, 3];
 
         let espessura = 0.1;
         let poisson = 0.3;
@@ -48,16 +48,18 @@ mod test {
         let constitutive_matrix =
             constitutive_matrix::constitutive_matrix("Plane stress", poisson, elasticidade);
 
-        let rigidez_local_element_01 =rigidez_local:: matriz_rigidez_local(
+        let rigidez_local_element_01 = rigidez_local::matriz_rigidez_local(
             x_coords_elem_1,
             y_coords_elem_1,
+            &global_node_ele_1,
             espessura,
             constitutive_matrix,
         );
 
-        let rigidez_local_element_02 =rigidez_local:: matriz_rigidez_local(
+        let rigidez_local_element_02 = rigidez_local::matriz_rigidez_local(
             x_coords_elem_2,
             y_coords_elem_2,
+            &global_node_ele_1,
             espessura,
             constitutive_matrix,
         );
@@ -115,9 +117,11 @@ mod test {
 
         let x_coords_elem_1 = vec![0.0, 0.0, 10.0];
         let y_coords_elem_1 = vec![20.0, 0.0, 15.0];
+        let global_node_ele_1: Vec<usize> = vec![0, 1, 3];
 
         let x_coords_elem_2 = vec![0.0, 10.0, 10.0];
         let y_coords_elem_2 = vec![0.0, 5.0, 15.0];
+        let global_node_ele_2: Vec<usize> = vec![1, 2, 3];
 
         let espessura = 0.1;
         let poisson = 0.3;
@@ -129,6 +133,7 @@ mod test {
         let rigidez_local_element_01 = rigidez_local::matriz_rigidez_local(
             x_coords_elem_1,
             y_coords_elem_1,
+            &global_node_ele_1,
             espessura,
             constitutive_matrix,
         );
@@ -136,6 +141,7 @@ mod test {
         let rigidez_local_element_02 = rigidez_local::matriz_rigidez_local(
             x_coords_elem_2,
             y_coords_elem_2,
+            &global_node_ele_2,
             espessura,
             constitutive_matrix,
         );
@@ -194,9 +200,11 @@ mod test {
 
         let x_coords_elem_1 = vec![0.0, 10.0, 0.0];
         let y_coords_elem_1 = vec![20.0, 15.0, 0.0];
+        let global_node_ele_1: Vec<usize> = vec![0, 1, 3];
 
         let x_coords_elem_2 = vec![10.0, 10.0, 0.0];
         let y_coords_elem_2 = vec![15.0, 5.0, 0.0];
+        let global_node_ele_2: Vec<usize> = vec![1, 2, 3];
 
         let espessura = 0.1;
         let poisson = 0.3;
@@ -205,16 +213,18 @@ mod test {
         let constitutive_matrix =
             constitutive_matrix::constitutive_matrix("Plane stress", poisson, elasticidade);
 
-        let rigidez_local_element_01 =rigidez_local:: matriz_rigidez_local(
+        let rigidez_local_element_01 = rigidez_local::matriz_rigidez_local(
             x_coords_elem_1,
             y_coords_elem_1,
+            &global_node_ele_1,
             espessura,
             constitutive_matrix,
         );
 
-        let rigidez_local_element_02 =rigidez_local:: matriz_rigidez_local(
+        let rigidez_local_element_02 = rigidez_local::matriz_rigidez_local(
             x_coords_elem_2,
             y_coords_elem_2,
+            &global_node_ele_2,
             espessura,
             constitutive_matrix,
         );
