@@ -11,6 +11,7 @@ mod matriz_reduzida;
 mod matriz_reduzida_eficiente;
 mod rigidez_global;
 mod rigidez_local;
+mod rigidez_local_struct;
 mod test1;
 mod test2;
 mod tests;
