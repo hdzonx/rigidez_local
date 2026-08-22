@@ -79,6 +79,9 @@ pub fn dot(a: &[f64], b: &[f64]) -> f64 {
 
 /// Gradiente Conjugado Precondicionado (Jacobi)
 pub fn conjugate_gradient_jacobi(a: &CsrMatrix, b: &[f64], max_iter: usize, tol: f64) -> Vec<f64> {
+    //número de threads
+    println!("Threads Rayon used: {}", rayon::current_num_threads());
+
     let n = b.len();
     let mut x = vec![0.0; n];
 
@@ -481,5 +484,32 @@ mod tests {
 
         println!("Erro de X = {}", error_x);
         assert!(error_x < 1e-5);
+    }
+
+    #[test]
+    fn test_jacobi_07() {
+        let k_dense = vec![
+            vec![0.56e6, -0.16e6, 0.0, 0.0],
+            vec![-0.16e6, 0.56e6, -0.4e6, 0.0],
+            vec![0.0, -0.4e6, 0.48e6, -0.08e6],
+            vec![0.0, 0.0, -0.08e6, 0.08e6],
+        ];
+        println!("Threads Rayon used: {}", rayon::current_num_threads());
+
+        let a = CsrMatrix::from_dense(&k_dense);
+        let b = vec![0.0, 30000.0, 0.0, 30000.0];
+        let x = conjugate_gradient_jacobi(&a, &b, 1000, 1e-12);
+        println!("x = {:?}", x);
+
+        let x_expected = [0.1500, 0.5250, 0.6000, 0.9750];
+        let error_x = x
+            .iter()
+            .zip(x_expected.iter())
+            .map(|(x_i, x_i_exp)| (x_i - x_i_exp).powi(2))
+            .sum::<f64>()
+            .sqrt();
+
+        println!("Erro de X = {}", error_x);
+        assert!(error_x < 1e-10);
     }
 }
