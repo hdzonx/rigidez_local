@@ -73,6 +73,7 @@ impl CsrMatrix {
             .collect()
     }
 
+    //Função muito importante para paralelização
     pub fn matvec(&self, x: &[f64]) -> Vec<f64> {
         (0..self.n)
             .into_par_iter()
