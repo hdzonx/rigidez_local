@@ -18,7 +18,7 @@
 
 use sprs::{CsMat, TriMat};
 #[cfg(test)]
-
+#[allow(unused)]
 mod test {
     use nalgebra::DMatrix;
     use nalgebra::Matrix6;
@@ -277,5 +277,81 @@ mod test {
 
         println!("Erro de X = {}", error_x);
         assert!(error_x < 1e-3);
+    }
+
+    #[test]
+    fn test_triangulo_unico() {
+        //
+        //                      /| (2) (1500.0, 1500.0)
+        //                    /  |
+        //                  /    |
+        //                /      |
+        //              /        |
+        //            /          |
+        //          /            |
+        //        /              |
+        //      /                |
+        //    /__________________|
+        //     |(0)-[0.0,0.0]    | (1) (1500.0, 0.0)
+        //     x                 x
+        // Dimensões em mm
+        //Força distribuída perpendicular à face 1-3 com F = 10 N/mm²
+        //Apoios simples em (0) e em (1)
+        //
+        //Coordenadas do elemtno
+        let x_coords_elem_1 = vec![0.0, 1500.0, 1500.0];
+        let y_coords_elem_1 = vec![0.0, 0.0, 1500.0];
+        let global_node_ele_1: Vec<usize> = vec![0, 1, 2];
+
+        //Propriedades
+        let espessura = 2.0; //mm
+        let poisson = 0.3;
+        let elasticidade = 70000.0; //N/mm²
+
+        let constitutive_matrix =
+            constitutive_matrix::constitutive_matrix("Plane stress", poisson, elasticidade);
+
+        let mut rigidez_local_element_01 = rigidez_local_struct::RigidezLocal::new(
+            x_coords_elem_1,
+            y_coords_elem_1,
+            global_node_ele_1,
+            espessura,
+            constitutive_matrix,
+        );
+        rigidez_local_element_01.assemble_local();
+
+        let elements = vec![([0, 1, 2], rigidez_local_element_01)];
+        let k_global = rigidez_global::assemble_sparse(3, &elements);
+
+        //F = [-15000+Rx0, 15000+Ry0, 0.0, Ry1, -15000, 15000]
+        // Remover DOFs 0 e 1 (apenas em y): Rx0, Ry0, Ry1
+        let removidos = vec![0, 1, 3];
+
+        let k_reduzida =
+            gradiente_conjug_jacobi::reduzir_matriz_k_global_csr(&k_global, &removidos);
+
+        println!("K global:");
+        k_global.print_dense();
+
+        println!("K reduzida:");
+        k_reduzida.print_dense();
+
+        // neste caso deve ser b reduzida
+        let b = vec![0.0, -15000.0, 15000.0];
+        let x = gradiente_conjug_jacobi::conjugate_gradient_jacobi(&k_reduzida, &b, 1000, 1e-12);
+        println!("x = {:?}", x);
+        //Avaliando o erro do vetor X
+        //a.x = b
+        let x_expected = [-0.27857142857, -0.83571428571, 0.27857142857];
+
+        let error_x = x
+            .iter()
+            .zip(x_expected.iter())
+            .map(|(x_i, x_i_exp)| (x_i - x_i_exp).powi(2))
+            .sum::<f64>()
+            .sqrt();
+
+        println!("Erro de X = {}", error_x);
+        assert!(error_x < 1e-10);
     }
 }

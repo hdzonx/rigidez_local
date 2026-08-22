@@ -1,11 +1,12 @@
 use crate::gradiente_conjug_jacobi::CsrMatrix;
 use crate::rigidez_local_struct::RigidezLocal;
 use nalgebra::{DMatrix, SMatrix};
-use sprs::{CsMat, TriMat};
+use sprs::TriMat;
 
 type Matrix6 = SMatrix<f64, 6, 6>;
 
 //Não eficiente para matriz esparsa
+#[allow(unused)]
 pub fn assemble_global_triangle(
     global_size: usize,
     locals: &Vec<(Matrix6, Vec<usize>)>,

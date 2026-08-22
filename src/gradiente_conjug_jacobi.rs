@@ -2,6 +2,7 @@ use nalgebra::DMatrix;
 use rayon::prelude::*;
 ///Gradiente conjugado com pré-condicionado Jacobi
 #[derive(Debug, Clone)]
+#[allow(unused)]
 pub struct CsrMatrix {
     pub values: Vec<f64>,
     pub col_indices: Vec<usize>,
@@ -10,6 +11,22 @@ pub struct CsrMatrix {
 }
 
 impl CsrMatrix {
+    pub fn print_dense(&self) {
+        for i in 0..self.n {
+            let mut row = vec![0.0; self.n];
+
+            let start = self.row_ptr[i];
+            let end = self.row_ptr[i + 1];
+
+            for idx in start..end {
+                let j = self.col_indices[idx];
+                row[j] = self.values[idx];
+            }
+
+            println!("{:?}", row);
+        }
+    }
+
     pub fn from_dense(dense: &[Vec<f64>]) -> Self {
         let n = dense.len();
         assert!(dense.iter().all(|r| r.len() == n));
