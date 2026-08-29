@@ -38,9 +38,9 @@ mod tests {
         let escalar = 3.297e6;
 
         let matriz_nua: Matrix6<f64> = Matrix6::new(
-            0.5, 0.0, -0.75, 0.15, 0.25, -0.15, 0., 0.175, 0.175, -0.2627, -0.175, 0.088, -0.75,
-            0.1750, 1.3, -0.488, -0.55, 0.313, 0.15, -0.2627, -0.488, 0.894, 0.338, -0.631, 0.25,
-            -0.175, -0.55, 0.338, 0.3, -0.163, -0.15, 0.088, 0.313, -0.631, -0.163, 0.544,
+            0.5, 0.0, -0.75, 0.15, 0.25, -0.15, 0., 0.175, 0.175, -0.2627, -0.175, 0.0875, -0.75,
+            0.1750, 1.3, -0.4875, -0.55, 0.3125, 0.15, -0.2627, -0.4875, 0.8937, 0.3375, -0.631, 0.25,
+            -0.175, -0.55, 0.3375, 0.3, -0.1625, -0.15, 0.0875, 0.3125, -0.631, -0.1625, 0.544,
         );
 
         let rigidez_local_esperada = escalar * matriz_nua;
@@ -50,13 +50,35 @@ mod tests {
         let constitutive_matrix =
             constitutive_matrix::constitutive_matrix("Plane stress", poisson, elasticidade);
 
-        let rigidez_local_calc = rigidez_local_struct::RigidezLocal::new(
+        let mut rigidez_local_calc = rigidez_local_struct::RigidezLocal::new(
             x_coords,
             y_coords,
             global_node_ele_1,
             espessura,
             constitutive_matrix,
         );
+        rigidez_local_calc.assemble_local();
+        let tol = 1000.0;
+        let mut _n: usize = 0;
+
+        for i in 0..rigidez_local_esperada.nrows() {
+            for j in 0..rigidez_local_esperada.ncols() {
+                println!("i = {}, j ={}", i + 1, j + 1);
+                let relat_err =
+                    rigidez_local_esperada[(i, j)].abs() - rigidez_local_calc.matrix[(i, j)].abs();
+                println!("valor esperado = {}", rigidez_local_esperada[(i, j)]);
+                println!("valor calculado = {}", rigidez_local_calc.matrix[(i, j)]);
+
+                _n += 1;
+
+                assert!(
+                    relat_err < tol,
+                    "Erro relativo alto demais: {} (esperado < {})",
+                    relat_err,
+                    tol
+                );
+            }
+        }
     }
 
     #[test]
@@ -93,7 +115,7 @@ mod tests {
         rigidez_local_calc.assemble_local();
 
         let tol = 1000.0;
-        let mut n: usize = 0;
+        let mut _n: usize = 0;
 
         for i in 0..rigidez_local_esperada.nrows() {
             for j in 0..rigidez_local_esperada.ncols() {
@@ -103,7 +125,7 @@ mod tests {
                 println!("valor esperado = {}", rigidez_local_esperada[(i, j)]);
                 println!("valor calculado = {}", rigidez_local_calc.matrix[(i, j)]);
 
-                n += 1;
+                _n += 1;
 
                 assert!(
                     relat_err < tol,
