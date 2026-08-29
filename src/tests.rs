@@ -14,7 +14,7 @@
 //      | /  /
 //      |/ /
 //      |/ (1)-[0,0]
-use sprs::{CsMat, TriMat};
+
 #[cfg(test)]
 mod tests {
     use nalgebra::DMatrix;
@@ -24,10 +24,7 @@ mod tests {
     use crate::constitutive_matrix;
     use crate::gradiente_conjug_jacobi;
     use crate::rigidez_global;
-    use crate::rigidez_local;
-    use crate:: rigidez_local_struct;
-
-    use sprs::{CsMat, TriMat};
+    use crate::rigidez_local_struct;
 
     #[test]
     fn calcula_rigidez_local_el_1() {
@@ -35,7 +32,7 @@ mod tests {
         let y_coords = vec![0.0, 5.0, 15.0];
         let global_node_ele_1: Vec<usize> = vec![0, 1, 2];
 
-       // let area = rigidez_local::area_triangulo(&x_coords, &y_coords);
+        // let area = rigidez_local::area_triangulo(&x_coords, &y_coords);
         let espessura = 0.1;
 
         let escalar = 3.297e6;
@@ -60,7 +57,6 @@ mod tests {
             espessura,
             constitutive_matrix,
         );
-
     }
 
     #[test]
@@ -69,15 +65,15 @@ mod tests {
         let y_coords = vec![0.0, 15.0, 20.0];
         let global_node_ele_2: Vec<usize> = vec![0, 2, 3];
 
-       // let area = rigidez_local::area_triangulo(&x_coords, &y_coords);
+        // let area = rigidez_local::area_triangulo(&x_coords, &y_coords);
         let espessura = 0.1;
 
         let escalar = 3.297e6;
 
         let matriz_nua: Matrix6<f64> = Matrix6::new(
-            0.15, 0.081, -0.25, -0.175, 0.1, 0.094, 0.081, 0.272, -0.15, -0.088, 0.069, -0.184,
-            -0.25, -0.15, 1.0, 0.0, -0.75, 0.15, -0.175, -0.088, 0.0, 0.35, 0.175, -0.263, 0.1,
-            0.069, -0.75, 0.175, 0.65, -0.244, 0.094, -0.184, 0.15, -0.263, -0.244, 0.447,
+            0.15, 0.081, -0.25, -0.175, 0.1, 0.094, 0.081, 0.272, -0.15, -0.0876, 0.069, -0.184,
+            -0.25, -0.15, 1.0, 0.0, -0.75, 0.15, -0.175, -0.0876, 0.0, 0.35, 0.175, -0.2625, 0.1,
+            0.069, -0.75, 0.175, 0.65, -0.244, 0.094, -0.184, 0.15, -0.2625, -0.244, 0.447,
         );
 
         let rigidez_local_esperada = escalar * matriz_nua;
@@ -87,14 +83,36 @@ mod tests {
         let constitutive_matrix =
             constitutive_matrix::constitutive_matrix("Plane stress", poisson, elasticidade);
 
-        let rigidez_local_calc = rigidez_local_struct::RigidezLocal::new(
+        let mut rigidez_local_calc = rigidez_local_struct::RigidezLocal::new(
             x_coords,
             y_coords,
             global_node_ele_2,
             espessura,
             constitutive_matrix,
         );
+        rigidez_local_calc.assemble_local();
 
+        let tol = 1000.0;
+        let mut n: usize = 0;
+
+        for i in 0..rigidez_local_esperada.nrows() {
+            for j in 0..rigidez_local_esperada.ncols() {
+                println!("i = {}, j ={}", i + 1, j + 1);
+                let relat_err =
+                    rigidez_local_esperada[(i, j)].abs() - rigidez_local_calc.matrix[(i, j)].abs();
+                println!("valor esperado = {}", rigidez_local_esperada[(i, j)]);
+                println!("valor calculado = {}", rigidez_local_calc.matrix[(i, j)]);
+
+                n += 1;
+
+                assert!(
+                    relat_err < tol,
+                    "Erro relativo alto demais: {} (esperado < {})",
+                    relat_err,
+                    tol
+                );
+            }
+        }
     }
 
     #[test]
@@ -135,7 +153,7 @@ mod tests {
         let y_coords_el_02 = vec![0.0, 15.0, 20.0];
         let global_node_ele_2: Vec<usize> = vec![0, 2, 3];
 
-        let rigidez_local_element_02 =rigidez_local_struct::RigidezLocal::new(
+        let rigidez_local_element_02 = rigidez_local_struct::RigidezLocal::new(
             x_coords_el_02,
             y_coords_el_02,
             global_node_ele_2,
@@ -157,7 +175,7 @@ mod tests {
         println!("Matriz global (CSR):");
         println!("{:?}", k_global);
         println!("\nConvertendo para matriz densa para visualização:\n");
-        // let dense_global_k = k_global.to_dense();
+        //  let dense_global_k = k_global.to_dense();
         // println!("{}", dense_global_k);
 
         //Avalie o erro com assertion para cada valor da matriz
@@ -224,7 +242,7 @@ mod tests {
 
         //Avalie o erro com assertion para cada valor da matriz
         let tol = 10.0;
-        let mut n = 0;
+        let mut n: usize = 0;
         for i in 0..matriz_reduzida_esperada.nrows() {
             for j in 0..matriz_reduzida_esperada.ncols() {
                 println!("i = {}, j ={}", i + 1, j + 1);
@@ -247,14 +265,6 @@ mod tests {
     #[test]
     fn resolve_sistema_eq() {
         let escalar = 3.297e6;
-        let matriz_reduzida_nua = DMatrix::<f64>::from_row_slice(
-            4,
-            4,
-            &[
-                1.3, -0.488, -0.55, 0.313, -0.488, 0.894, 0.338, -0.631, -0.55, 0.338, 1.3, -0.163,
-                0.313, -0.631, -0.163, 0.894,
-            ],
-        );
 
         let matriz_nua = DMatrix::<f64>::from_row_slice(
             8,

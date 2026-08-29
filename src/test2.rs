@@ -10,7 +10,6 @@
 //  [/]7|_____\8|_____\9| ----------> 100
 //
 
-use sprs::{CsMat, TriMat};
 #[cfg(test)]
 mod test {
 

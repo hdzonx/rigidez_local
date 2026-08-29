@@ -16,7 +16,6 @@
 //      |/ /
 //    X-|/ (0)-[0,0]
 
-use sprs::{CsMat, TriMat};
 #[cfg(test)]
 #[allow(unused)]
 mod test {
